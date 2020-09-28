@@ -1,0 +1,27 @@
+
+.profile-badge{
+    display: flex;
+    flex-direction: row;
+}
+
+.profile-picture{
+    border-radius: 100%;
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+}
+
+.profile-badge-info-wrapper{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.profile-badge-info-wrapper .name{
+    font-size: 16px;
+}
+
+.profile-badge-info-wrapper .email{
+    font-size: 12px;
+    color : #9DAABF;
+}

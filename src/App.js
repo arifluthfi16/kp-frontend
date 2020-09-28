@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import './App.css';
 import {
   BrowserRouter as Router,
@@ -6,19 +6,37 @@ import {
   Route,
   Link
 } from "react-router-dom";
-import Login from "../Login/Login";
+import LoginPage from "./pages/Login/LoginPage";
+import DashboardPage from "./pages/Dashboard/DashboardPage";
+import LoginContextProvider from "./contexts/LoginContext";
+import axios from 'axios';
 
-function App() {
+
+function checkLoginStatus(){
+  // Get stored JWT
+
+  // Get Current login
+
+  // Set user
+}
+
+const App = () => {
+
+  useEffect(()=>{
+    checkLoginStatus()
+  });
+
   return (
-    <Router>
-      <Switch>
-        <Route path={"/"}>
-        </Route>
-        <Route exact path={"/login"}>
-          <Login/>
-        </Route>
-      </Switch>
-    </Router>
+    <div>
+      <LoginContextProvider>
+        <Router>
+          <Switch>
+            <Route exact path={"/"} component={DashboardPage}/>
+            <Route exact path={"/login"} component={LoginPage}/>
+          </Switch>
+        </Router>
+      </LoginContextProvider>
+    </div>
   );
 }
 

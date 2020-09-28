@@ -1,0 +1,7 @@
+.content-breadcrumb{
+    padding : 16px var(--content-padding-lr);
+    background-color: white;
+    display: flex;
+    flex-direction: row;
+    border-bottom: 1px solid #EDEDED;
+}

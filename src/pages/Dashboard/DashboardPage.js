@@ -1,7 +1,15 @@
 import React from 'react';
+import "./dashboard-page.css";
+import SideNav from "../../components/SideNav/SideNav";
+import Content from "../../components/Content/Content";
 
-const Dashboard = () =>{
-
+const DashboardPage = () =>{
+  return (
+    <div className={"dashboard-container"}>
+        <SideNav/>
+        <Content/>
+    </div>
+  )
 }
 
-export default Dashboard;
+export default DashboardPage;

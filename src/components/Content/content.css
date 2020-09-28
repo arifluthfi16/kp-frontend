@@ -1,0 +1,25 @@
+.content-body-container{
+    margin-left: 256px;
+    width: 100%;
+    min-height: 100vh;
+}
+
+.content-header{
+    padding : 21px 32px;
+    background-color: white;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #EDEDED;
+}
+
+.header-title{
+    font-size: 22px;
+    font-weight: bold;
+}
+
+.tabs-wrapper{
+    margin : var(--spacing-2) 32px;
+    background: #fff;
+}

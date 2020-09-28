@@ -1,0 +1,85 @@
+body {
+    font-family: "Lato", sans-serif;
+}
+
+.sidenav {
+    height: 100%;
+    width: 256px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background: #001D3A;
+    overflow-x: hidden;
+    display: block;
+}
+
+.sidenav::-webkit-scrollbar{
+    display: none;
+}
+
+.sidenav li {
+    padding: 16px 0px 16px 24px;
+    text-decoration: none;
+    font-size: 16px;
+    color: #9ED5FA;
+    display: block;
+}
+
+/*.sidenav li:first-child{*/
+/*    border-bottom: 1.5px solid #243E5A;*/
+/*}*/
+
+.sidenav ul{
+    margin : 0px;
+    padding: 0px;
+}
+
+.sidenav li:hover {
+    color: #f1f1f1;
+    background-color: white;
+}
+
+.accordion-style {
+    background-color: #001D3A !important;
+    background: #001D3A !important;
+}
+
+.accordion-style li{
+    background: #001D3A !important;
+    outline: 0px;
+    cursor: pointer;
+}
+
+.accordion-style button{
+    background: #001D3A;
+    color : white;
+    border: none;
+}
+
+.accordion-style button:hover{
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+
+.accordion-style :focus{
+    border: none!important;
+    background: none;
+    outline: none;
+}
+
+.accordion-style .bm-accordion__content{
+    background: #001D3A;
+    outline: none;
+    border: none;
+}
+
+.nav-border-bottom{
+    border-bottom: 1.5px solid #243E5A;
+}
+
+.accordion-style .bm-accordion__header{
+    border: none;
+}
+
+
