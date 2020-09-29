@@ -8,8 +8,12 @@ import {
 } from "react-router-dom";
 import LoginPage from "./pages/Login/LoginPage";
 import DashboardPage from "./pages/Dashboard/DashboardPage";
+import SuratMasukPage from "./pages/Surat/SuratMasuk/SuratMasukPage";
 import LoginContextProvider from "./contexts/LoginContext";
 import axios from 'axios';
+import BuatSuratPage from "./pages/Surat/BuatSurat/BuatSuratPage";
+import SuratKeluarPage from "./pages/Surat/SuratKeluar/SuratKeluarPage";
+import Draft from "./pages/Surat/Draft/DraftPage";
 
 
 function checkLoginStatus(){
@@ -31,8 +35,12 @@ const App = () => {
       <LoginContextProvider>
         <Router>
           <Switch>
-            <Route exact path={"/"} component={DashboardPage}/>
             <Route exact path={"/login"} component={LoginPage}/>
+            <Route exact path={"/"} component={DashboardPage}/>
+            <Route exact path={"/surat-masuk"} component={SuratMasukPage}/>
+            <Route exact path={"/buat-surat"} component={BuatSuratPage}/>
+            <Route exact path={"/surat-keluar"} component={SuratKeluarPage}/>
+            <Route exact path={"/draft"} component={Draft}/>
           </Switch>
         </Router>
       </LoginContextProvider>

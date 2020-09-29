@@ -19,7 +19,7 @@
     font-weight: bold;
 }
 
-.tabs-wrapper{
+.content-wrapper{
     margin : var(--spacing-2) 32px;
     background: #fff;
 }

@@ -13,10 +13,20 @@
     /*background-color: #aaa;*/
 }
 
+.table-content .viewed{
+    background-color: #fafafa;
+}
+
 .table-content th{
-    text-align: left;
+    text-align: center;
+    vertical-align: middle;
     background-color: #F5F8FF;
     color: #031A2E;
+}
+
+.table-content td{
+    text-align: center;
+    vertical-align: middle;
 }
 
 .table-content tr{

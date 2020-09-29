@@ -18,10 +18,10 @@ body {
 }
 
 .sidenav li {
-    padding: 16px 0px 16px 24px;
+    padding: 16px 0px 12px 24px;
     text-decoration: none;
     font-size: 16px;
-    color: #9ED5FA;
+    color: #fff;
     display: block;
 }
 
@@ -35,19 +35,17 @@ body {
 }
 
 .sidenav li:hover {
-    color: #f1f1f1;
-    background-color: white;
+    color: red;
 }
 
 .accordion-style {
-    background-color: #001D3A !important;
-    background: #001D3A !important;
+    background-color: #001D3A;
+    background: #001D3A;
 }
 
 .accordion-style li{
     background: #001D3A !important;
     outline: 0px;
-    cursor: pointer;
 }
 
 .accordion-style button{
@@ -80,6 +78,20 @@ body {
 
 .accordion-style .bm-accordion__header{
     border: none;
+}
+
+.sidenav Link{
+    text-transform:  none;
+    text-decoration: none;
+}
+
+.sidenav-links{
+    text-transform:  none;
+    text-decoration: none;
+}
+
+.cursor-pointer{
+    cursor: pointer;
 }
 
 
