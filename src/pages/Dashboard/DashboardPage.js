@@ -7,8 +7,9 @@ const DashboardPage = () =>{
   return (
     <div className={"dashboard-container"}>
         <SideNav/>
-      <Content>
-        <h1>Dashboard Page</h1>
+      <Content
+        header_title={"Dashboard"}
+      >
       </Content>
     </div>
   )

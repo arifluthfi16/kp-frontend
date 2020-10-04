@@ -12,7 +12,9 @@ const SuratMasukPage = (props) =>{
   return (
     <div className={"dashboard-container"}>
         <SideNav/>
-      <Content>
+      <Content
+        header_title = {"Surat Masuk"}
+      >
         <Tabs>
           <TabList>
             <Tab>

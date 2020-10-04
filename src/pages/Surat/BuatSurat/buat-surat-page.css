@@ -1,0 +1,23 @@
+.card{
+    width: 180px;
+    height: 120px;
+    background-color: red;
+    border-radius: 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.buat-surat-wrapper Link{
+    text-decoration: none;
+}
+
+.card-title{
+    color: #fff;
+    font-size: 18px;
+    font-weight: bold
+}
+
+.row .card{
+    margin: 8px 60px;
+}

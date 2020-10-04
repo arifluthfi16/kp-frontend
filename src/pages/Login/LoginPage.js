@@ -5,35 +5,28 @@ import Logo from "../../images/logo-unikom.png";
 import {LoginContext} from "../../contexts/LoginContext";
 import {Button, Input} from "bima-design";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faGoogle } from '@fortawesome/free-brands-svg-icons'
+import { faGoogle } from '@fortawesome/free-brands-svg-icons';
 
 const LoginPage = (props) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const {login, jwt, error, mockLogin} = useContext(LoginContext);
+  const {login, user, checkLogin, signin} = useContext(LoginContext);
 
-  function handleLogin(){
-    // Get login data
-
-    // Set JWT Token
-
-  }
-
-  function checkLoginAndJWT(){
-    console.log(login,jwt)
-  }
-
-  function setLoadState(){
-    setLoading(!loading);
-  }
+  useEffect(()=>{
+    // Check if user already logged in
+    checkLogin();
+    if(login){
+      window.location.replace("/");
+    }
+  }, [login])
 
   function renderButton(){
     if(loading){
       return(
         <Button
-          className={"child"}
-          onClick={handleLogin}
+          className={"child login-page-item-size"}
+          onClick={()=>{signin(username, password)}}
           disabled
         >Loading</Button>
       )
@@ -41,7 +34,9 @@ const LoginPage = (props) => {
       return(
         <Button
           className={"child login-page-item-size"}
-          onClick={handleLogin}
+          onClick={()=>{
+            signin(username, password)
+          }}
         >Login</Button>
       )
     }
@@ -51,11 +46,12 @@ const LoginPage = (props) => {
     <div className={"container-login"}>
       <div className={"login-block"}>
         <div className="container-column">
+          {login ? <h6>Already Loggedin</h6> : <h6 style={{color:"red"}}>Not Login</h6>}
           <img src={Logo} className={"login-logo"} alt="Logo Unikom"/>
 
           <Input
             type="text"
-            placeholder={"Email"}
+            placeholder={"Username"}
             className="input-style"
             onChange={(e)=> setUsername(e.target.value)}
             required
