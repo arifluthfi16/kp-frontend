@@ -1,0 +1,29 @@
+.download-pdf-button-wrapper {
+    background-color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid transparent;
+    padding: 16px 16px;
+    /*margin : 0px 8px 8px 0px;*/
+}
+
+.wrapper{
+    display: flex;
+    flex-direction: row;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
+}
+
+.download-pdf-button-wrapper:hover {
+    border: 1px solid #D0D9E5;
+    background-color: #fafafa;
+}
+
+.filename{
+    color: #898787;
+    font-size: small;
+}

@@ -22,7 +22,7 @@ const BuatSuratPage = () =>{
                 </div>
               </div>
             </Link>
-            <Link to={"/buat-surat/upload"} style={{textDecoration : "none"}}>
+            <Link to={"/buat-surat/upload-surat"} style={{textDecoration : "none"}}>
               <div className="card" style={{backgroundColor : "#E0AE24"}}>
                 <div className="card-title">
                   Upload File Surat

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import "./surat-keluar-page.css";
 import SideNav from "../../../components/SideNav/SideNav";
 import Content from "../../../components/Content/Content";
@@ -8,8 +8,70 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faPlusSquare, faSearch} from "@fortawesome/free-solid-svg-icons";
 import TableContent from "../../../components/TableContent/TableContent";
 import SuratKeluarTable from "./SuratKeluarTable";
+import {DocusignLoginContext} from "../../../contexts/DocusignLoginContext";
+import axios from "axios";
+import RotateLoader from "react-spinners/RotateLoader";
 
 const SuratKeluarPage = () =>{
+  const {docuContext} = useContext(DocusignLoginContext);
+  const [dataSurat, setDataSurat] = useState({
+    data : null,
+    isFetching : true
+  });
+
+  const setFetch = (newStatus) =>{
+    setDataSurat(prevState => ({
+        ...prevState,
+        isFetching: newStatus
+      })
+    )}
+
+  useEffect(()=>{
+    if(docuContext.login && docuContext.profile.accounts){
+      fetchDataSurat();
+    }
+  }, [docuContext.login]);
+
+  const fetchDataSurat = async () =>{
+    if(!docuContext.profile.accounts[0].account_id) return;
+
+    let url = "http://localhost:3001/api/surat/keluar";
+    let data = {
+      access_token : docuContext.auth.access_token,
+      account_id : docuContext.profile.accounts[0].account_id
+    }
+
+    try{
+      setFetch(true);
+      let response =  await axios({url, method : "post", data});
+      setDataSurat({
+        data: response.data,
+        isFetching: false
+      })
+    }catch(error){
+      setDataSurat({
+        data: null,
+        isFetching: false
+      })
+    }
+  }
+
+  const conditionallyPrintTable = () =>{
+    if(dataSurat.isFetching && !dataSurat.data){
+      return (
+        <div className={"loading-spinner-container"}>
+          <RotateLoader
+            color={"#001D3A"}
+            size={20}
+            margin={20}
+          />
+        </div>
+      )
+    }else{
+      return <SuratKeluarTable data={dataSurat.data}/>
+    }
+  }
+
   return (
     <div className={"dashboard-container"}>
         <SideNav/>
@@ -36,7 +98,7 @@ const SuratKeluarPage = () =>{
                     icon={<FontAwesomeIcon icon={faPlusSquare}/>}
                   >Buat Surat</Button>
                 </div>
-                <SuratKeluarTable/>
+                {conditionallyPrintTable()}
               </div>
             </TabPanel>
             <TabPanel>

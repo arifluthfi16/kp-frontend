@@ -1,12 +1,11 @@
 import React from "react";
-import "./draft-table.css";
-import { Button } from 'bima-design';
+import "./table-content.css";
+import {Button} from 'bima-design';
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faTrash, faInfo, faEdit, faDownload, faSignature} from "@fortawesome/free-solid-svg-icons";
+import {faInfo, faTrash, faSignature, faDownload} from "@fortawesome/free-solid-svg-icons";
+import {Link} from "react-router-dom";
 
-
-const DraftTable = (props) =>{
-
+const TableSuratMasuk = (props) =>{
   console.log(props.data)
 
   const conditionallyPrintTable = () =>{
@@ -19,9 +18,10 @@ const DraftTable = (props) =>{
         return (
           <tr key={index}>
             <td>{listValue.emailSubject}</td>
-            <td>{dateParser(listValue.lastModifiedDateTime)}</td>
-            <td>{listValue.recipients.signers[0].name}</td>
-            <td>{conditionallyPrintButton(listValue.status)}</td>
+            <td>{dateParser(listValue.sentDateTime)}</td>
+            <td>{listValue.sender.userName}</td>
+            <td>{statusTranslator(listValue.status)}</td>
+            <td>{conditionallyPrintButton(listValue.status, listValue.envelopeId)}</td>
           </tr>
         )
       })
@@ -84,7 +84,21 @@ const DraftTable = (props) =>{
     }
   }
 
-  const conditionallyPrintButton = (status) =>{
+  const createDetailButton = (envelopeId) =>{
+    return (
+      <Link to={`/detail-surat/${envelopeId}`}>
+        <Button
+          className="mr-2"
+          size={"small"}
+          icon={<FontAwesomeIcon icon={faInfo}/>}
+        >
+          Detail
+        </Button>
+      </Link>
+    )
+  }
+
+  const conditionallyPrintButton = (status, envelopeId) =>{
     switch (status) {
       case "completed" :
         return (
@@ -94,11 +108,13 @@ const DraftTable = (props) =>{
               size={"small"}
               icon={<FontAwesomeIcon icon={faDownload}/>}
             >Download</Button>
+            {createDetailButton(envelopeId)}
             <Button
+              kind={"danger"}
               className="mr-2"
               size={"small"}
-              icon={<FontAwesomeIcon icon={faInfo}/>}
-            >Detail</Button>
+              icon={<FontAwesomeIcon icon={faTrash}/>}
+            >Hapus</Button>
           </div>
         )
       case "sent" :
@@ -109,26 +125,7 @@ const DraftTable = (props) =>{
               size={"small"}
               icon={<FontAwesomeIcon icon={faSignature}/>}
             >Sign</Button>
-            <Button
-              className="mr-2"
-              size={"small"}
-              icon={<FontAwesomeIcon icon={faInfo}/>}
-            >Detail</Button>
-          </div>
-        )
-      case "created" :
-        return (
-          <div className="row justify-space-between" style={{margin: "0px 16px"}}>
-            <Button
-              className="mr-2"
-              size={"small"}
-              icon={<FontAwesomeIcon icon={faDownload}/>}
-            >Lanjutkan</Button>
-            <Button
-              className="mr-2"
-              size={"small"}
-              icon={<FontAwesomeIcon icon={faInfo}/>}
-            >Detail</Button>
+            {createDetailButton(envelopeId)}
             <Button
               kind={"danger"}
               className="mr-2"
@@ -137,6 +134,8 @@ const DraftTable = (props) =>{
             >Hapus</Button>
           </div>
         )
+      case "created" :
+        return "Draft"
       case "delivered":
         // Sudah Di Tanda Tangan
         return (
@@ -146,11 +145,13 @@ const DraftTable = (props) =>{
               size={"small"}
               icon={<FontAwesomeIcon icon={faDownload}/>}
             >Download</Button>
+            {createDetailButton(envelopeId)}
             <Button
+              kind={"danger"}
               className="mr-2"
               size={"small"}
-              icon={<FontAwesomeIcon icon={faInfo}/>}
-            >Detail</Button>
+              icon={<FontAwesomeIcon icon={faTrash}/>}
+            >Hapus</Button>
           </div>
         )
       default:
@@ -160,15 +161,20 @@ const DraftTable = (props) =>{
 
   return  (
     <table className={"table-content"} width={"100%"}>
+      <thead>
       <tr>
         <th width="30%">Perihal</th>
-        <th width="25%">Terakhir Diubah</th>
-        <th width="20%">Penerima</th>
+        <th width="25%">Tanggal Dikirim</th>
+        <th width="20%">Pengirim</th>
+        <th width="10%">Status Terakhir</th>
         <th width="15%">Aksi</th>
       </tr>
+      </thead>
+      <tbody>
       {conditionallyPrintTable()}
+      </tbody>
     </table>
   )
 }
 
-export default DraftTable;
+export default TableSuratMasuk;

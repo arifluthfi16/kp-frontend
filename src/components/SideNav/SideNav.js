@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import "./sidenav.css";
 import Logo from "../../images/logo-dashboard.png";
 import {Accordion, AccordionItem, Button} from "bima-design";
@@ -7,6 +7,7 @@ import {faEnvelope, faPlusSquare, faInbox, faPaperPlane, faFileWord} from "@fort
 import {Link} from "react-router-dom";
 
 const SideNav = ()=>{
+
   const [navOpen, setNavOpen] = useState(()=>{
     let curState = localStorage.getItem("sidenav");
     if(curState === "true"){
@@ -17,7 +18,6 @@ const SideNav = ()=>{
 
   function handleSidenavOnClick(){
     let curState = localStorage.getItem("sidenav");
-    console.log(curState)
     if(curState === null){
       setNavOpen(true)
       localStorage.setItem("sidenav", true);
@@ -85,6 +85,19 @@ const SideNav = ()=>{
                 </Link>
               </li>
             </ul>
+          </AccordionItem>
+
+          {/* Development Only */}
+          <AccordionItem
+            className="accordion-style"
+            title="Docusign Profile"
+          >
+            <Link to={"/docusign-profile"} style={{textDecoration : "none", color: "#fff"}}>
+              <div className="row">
+                <FontAwesomeIcon icon={faPlusSquare} className="mr-2" color={"#748BA9"}/>
+                <label className={"cursor-pointer"}>Profile Docusign</label>
+              </div>
+            </Link>
           </AccordionItem>
       </Accordion>
     </div>

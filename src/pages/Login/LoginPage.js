@@ -46,7 +46,7 @@ const LoginPage = (props) => {
     <div className={"container-login"}>
       <div className={"login-block"}>
         <div className="container-column">
-          {login ? <h6>Already Loggedin</h6> : <h6 style={{color:"red"}}>Not Login</h6>}
+          {/*{login ? <h6>Already Loggedin</h6> : <h6 style={{color:"red"}}>Not Login</h6>}*/}
           <img src={Logo} className={"login-logo"} alt="Logo Unikom"/>
 
           <Input

@@ -1,0 +1,72 @@
+.dashboard-container{
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    margin : 0px;
+    background-color: #F8F8F8;
+}
+
+.header-bar{
+    width: 100%;
+    background-color: #fff;
+    margin-bottom: 16px;
+    display: flex;
+    border-bottom: 1px solid #D0D9E5;
+}
+
+.header-bar .back-button-wrapper{
+    cursor: pointer;
+    background-color: white;
+    height: 100%;
+    padding: 16px;
+}
+
+.header-bar .back-button{
+    margin-left: 16px;
+}
+
+.action-bar{
+    width: 100%;
+    padding: 8px 40px;
+    background-color: #fff;
+}
+
+.action-wrapper {
+    display: flex;
+    flex-direction: row;
+}
+
+.action-item-wrapper{
+  padding: 8px 0px 8px 16px;
+}
+
+.detail-content{
+    /*width: 100%;*/
+    padding: 24px 40px 80px 40px;
+    background-color: #fff;
+    display: flex;
+    flex-direction: column;
+    /*margin-top: 40px;*/
+}
+
+.title-surat-wrapper{
+    padding : 8px 16px 16px 0px;
+}
+
+.title-surat{
+    color: #031A2E;
+    font-weight: bold;
+    font-size: 24px;
+    margin-bottom: 4px;
+}
+
+.tanggal-kirim{
+    color: #9DAABF;
+    font-size: small;
+}
+
+.envelope-item-wrapper{
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 16px;
+}

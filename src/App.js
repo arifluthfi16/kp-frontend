@@ -14,6 +14,9 @@ import SuratMasukPage from "./pages/Surat/SuratMasuk/SuratMasukPage";
 import axios from 'axios';
 import BuatSuratPage from "./pages/Surat/BuatSurat/BuatSuratPage";
 import SuratKeluarPage from "./pages/Surat/SuratKeluar/SuratKeluarPage";
+import DocusignProfilePage from "./pages/DocusignProfile/DocusignProfilePage";
+import DetailSuratPage from "./pages/Surat/DetailSurat/DetailSuratPage";
+import UploadFileSuratPage from "./pages/Surat/UploadFileSurat/UploadFileSuratPage";
 import Draft from "./pages/Surat/Draft/DraftPage";
 import ProcessDocusignCode from "./pages/ProcessDocusignCode/ProcessDocusignCode";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
@@ -21,10 +24,16 @@ import { createBrowserHistory } from "history";
 
 // Context and Providers
 import {LoginContext} from "./contexts/LoginContext";
+import {DocusignLoginContext} from "./contexts/DocusignLoginContext";
 
 const App = () => {
+  const {docuContext, checkDocuLogin} = useContext(DocusignLoginContext);
+
+  useEffect(()=>{
+    checkDocuLogin();
+  }, [docuContext.login]);
+
   const history = createBrowserHistory();
-  const {login, checkLogin} = useContext(LoginContext);
   return (
     <div>
       <Router history={history}>
@@ -36,6 +45,9 @@ const App = () => {
           <ProtectedRoute exact path={"/surat-keluar"} component={SuratKeluarPage}/>
           <ProtectedRoute exact path={"/draft"} component={Draft}/>
           <ProtectedRoute exact path={"/proses-login"} component={ProcessDocusignCode}/>
+          <ProtectedRoute exact path={"/docusign-profile"} component={DocusignProfilePage}/>
+          <ProtectedRoute exact path={"/buat-surat/upload-surat"} component={UploadFileSuratPage}/>
+          <ProtectedRoute path={"/detail-surat/"} component={DetailSuratPage}/>
         </Switch>
       </Router>
     </div>

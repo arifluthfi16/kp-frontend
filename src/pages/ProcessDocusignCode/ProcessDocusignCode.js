@@ -23,9 +23,10 @@ const ProcessDocusignCode = (props) =>{
       <SideNav/>
       <Content
         header_title={"Proses Login"}
+        turnoff_login = {true}
       >
         <div className="proses-login-wrapper">
-          <h2>Please Wait</h2>
+          <h4>Redirecting . . .</h4>
         </div>
       </Content>
     </div>
