@@ -10,7 +10,7 @@ const DraftTable = (props) =>{
   console.log(props.data)
 
   const conditionallyPrintTable = () =>{
-    if(!props.data){
+    if(!props.data || !props.data.envelopes){
       return <tr>
         <td colSpan={5}><h3>Too bad it's empty</h3></td>
       </tr>

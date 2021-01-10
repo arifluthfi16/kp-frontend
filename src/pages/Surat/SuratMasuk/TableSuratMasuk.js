@@ -1,27 +1,40 @@
-import React from "react";
+import React, {useContext} from "react";
 import "./table-content.css";
 import {Button} from 'bima-design';
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faInfo, faTrash, faSignature, faDownload} from "@fortawesome/free-solid-svg-icons";
+import axios from "axios";
 import {Link} from "react-router-dom";
+import {DocusignLoginContext} from "../../../contexts/DocusignLoginContext";
+import download from "downloadjs"
 
 const TableSuratMasuk = (props) =>{
-  console.log(props.data)
+  const {docuContext} = useContext(DocusignLoginContext);
+
+  let signerInfo = {
+    access_token : docuContext.auth.access_token,
+    account_id : docuContext.profile.accounts[0].account_id,
+    signerEmail : docuContext.profile.email,
+    signerName : docuContext.profile.family_name
+  }
 
   const conditionallyPrintTable = () =>{
-    if(!props.data){
+    if(!props.data || !props.data.envelopes){
       return <tr>
         <td colSpan={5}><h3>Too bad it's empty</h3></td>
       </tr>
     }else{
       return props.data.envelopes.map((listValue, index)=>{
         return (
-          <tr key={index}>
+          <tr
+            key={index}
+            onClick={()=>console.log("Tab Clicked Open Detail")}
+          >
             <td>{listValue.emailSubject}</td>
             <td>{dateParser(listValue.sentDateTime)}</td>
             <td>{listValue.sender.userName}</td>
             <td>{statusTranslator(listValue.status)}</td>
-            <td>{conditionallyPrintButton(listValue.status, listValue.envelopeId)}</td>
+            <td>{conditionallyPrintButton(listValue)}</td>
           </tr>
         )
       })
@@ -84,31 +97,106 @@ const TableSuratMasuk = (props) =>{
     }
   }
 
-  const createDetailButton = (envelopeId) =>{
+  const createDisposisiButton = (envelopeId) =>{
     return (
-      <Link to={`/detail-surat/${envelopeId}`}>
-        <Button
-          className="mr-2"
-          size={"small"}
-          icon={<FontAwesomeIcon icon={faInfo}/>}
+        <Link
+          to={`/buat-disposisi/${envelopeId}`}
+          style={{
+            textDecoration : "none",
+            cursor : "auto"
+          }}
         >
-          Detail
-        </Button>
-      </Link>
+          <Button
+            className="mr-2"
+            size={"small"}
+            icon={<FontAwesomeIcon icon={faInfo}/>}
+            onClick={(e)=> {
+              e.stopPropagation()
+              console.log(`/buat-disposisi/${envelopeId}`)
+            }}
+          >
+            Disposisi
+          </Button>
+        </Link>
+
+
     )
   }
 
-  const conditionallyPrintButton = (status, envelopeId) =>{
+  // const createDisposisiButton = (envelopeId) =>{
+  //   return (
+  //     <Link to={`/detail-surat/${envelopeId}`}>
+  //       <Button
+  //         className="mr-2"
+  //         size={"small"}
+  //         icon={<FontAwesomeIcon icon={faInfo}/>}
+  //       >
+  //         Disposisi
+  //       </Button>
+  //     </Link>
+  //   )
+  // }
+
+  const createDownloadButton = (envelopeId) =>{
+    return (
+      <Button
+        className="mr-2"
+        size={"small"}
+        icon={<FontAwesomeIcon icon={faDownload}/>}
+        onClick={async ()=>{
+          await handleDownloadButton({envelopeId})
+        }}
+      >Download</Button>
+    )
+  }
+
+  const createSignButton = (envelopeData) => {
+    let {envelopeId} = envelopeData
+    const RETURN_URL = "http://localhost:3000/surat-masuk"
+
+    let payload = {
+      access_token : signerInfo.access_token,
+      accountId : signerInfo.account_id,
+      return_url: RETURN_URL,
+      signerEmail : signerInfo.signerEmail,
+      signerName : signerInfo.signerName,
+      envelopeId
+    }
+
+    return (
+      <Button
+        className="mr-2"
+        size={"small"}
+        icon={<FontAwesomeIcon icon={faSignature}/>}
+        onClick={()=>handleSignClick(payload)}
+      >Sign</Button>
+    )
+  }
+
+  const handleSignClick = async (payload) =>{
+    const REQUEST_URL = "http://localhost:3001/api/buat-view-tandatangan";
+
+    const result = await axios.post(REQUEST_URL, payload);
+    if(result.status === 200){
+      if(result.data.url === undefined){
+        alert("Failed to create signer view")
+      }else {
+        window.location.replace(result.data.url)
+      }
+    }else{
+      console.log("Failed to fetch data")
+    }
+  }
+
+  const conditionallyPrintButton = (envelopeData) =>{
+    let {envelopeId, status} = envelopeData
+
     switch (status) {
       case "completed" :
         return (
           <div className="row justify-space-between" style={{margin: "0px 16px"}}>
-            <Button
-              className="mr-2"
-              size={"small"}
-              icon={<FontAwesomeIcon icon={faDownload}/>}
-            >Download</Button>
-            {createDetailButton(envelopeId)}
+            {createDownloadButton(envelopeId)}
+            {createDisposisiButton(envelopeId)}
             <Button
               kind={"danger"}
               className="mr-2"
@@ -120,12 +208,8 @@ const TableSuratMasuk = (props) =>{
       case "sent" :
         return (
           <div className="row justify-space-between" style={{margin: "0px 16px"}}>
-            <Button
-              className="mr-2"
-              size={"small"}
-              icon={<FontAwesomeIcon icon={faSignature}/>}
-            >Sign</Button>
-            {createDetailButton(envelopeId)}
+            {createSignButton(envelopeData)}
+            {createDisposisiButton(envelopeId)}
             <Button
               kind={"danger"}
               className="mr-2"
@@ -140,12 +224,8 @@ const TableSuratMasuk = (props) =>{
         // Sudah Di Tanda Tangan
         return (
           <div className="row justify-space-between" style={{margin: "0px 16px"}}>
-            <Button
-              className="mr-2"
-              size={"small"}
-              icon={<FontAwesomeIcon icon={faDownload}/>}
-            >Download</Button>
-            {createDetailButton(envelopeId)}
+            {createDownloadButton(envelopeId)}
+            {createDisposisiButton(envelopeId)}
             <Button
               kind={"danger"}
               className="mr-2"
@@ -156,6 +236,27 @@ const TableSuratMasuk = (props) =>{
         )
       default:
         return status
+    }
+  }
+
+  const handleDownloadButton = async (payload) =>{
+    console.log("Download Initiated")
+    if(!docuContext.profile.accounts[0].account_id) return;
+
+    let url = "http://localhost:3001/api/document/download";
+
+    let data = {
+      access_token : docuContext.auth.access_token,
+      accountId : docuContext.profile.accounts[0].account_id,
+      envelopeId: payload.envelopeId,
+    }
+
+    try{
+      let response =  await axios({url, method : "post", data, responseType: 'blob'});
+      console.log(response)
+      await download(response.data, 'test.zip');
+    }catch(error){
+      console.log(error)
     }
   }
 

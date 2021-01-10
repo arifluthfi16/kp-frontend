@@ -1,22 +1,24 @@
 import React, {useContext, useEffect, useState} from 'react';
-import "./draft-page.css";
+import "./surat-disposisi-masuk-page.css";
 import SideNav from "../../../components/SideNav/SideNav";
 import Content from "../../../components/Content/Content";
 import {Tab, TabList, TabPanel, Tabs} from "react-tabs";
 import {Button, Input} from "bima-design";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faPlusSquare, faSearch} from "@fortawesome/free-solid-svg-icons";
-import DraftTable from "./DraftTable";
+import {faInfo, faPlusSquare, faSearch, faTrash} from "@fortawesome/free-solid-svg-icons";
+import TableDisposisi from "./TableDisposisi";
 import {DocusignLoginContext} from "../../../contexts/DocusignLoginContext";
-import axios from "axios";
+import axios from "axios"
+import { css } from "@emotion/core";
 import RotateLoader from "react-spinners/RotateLoader";
-import SuratKeluarTable from "../SuratKeluar/SuratKeluarTable";
+import {LoginContext} from "../../../contexts/LoginContext";
 
-const Draft = () =>{
+const SuratDisposisiMasuk = (props) =>{
   const {docuContext} = useContext(DocusignLoginContext);
-  const [dataSurat, setDataSurat] = useState({
+  const {user} = useContext(LoginContext);
+  const [dataDisposisi, setDataDisposisi] = useState({
     data : null,
-    isFetching : true
+    isFetching : true,
   });
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState({
@@ -24,26 +26,30 @@ const Draft = () =>{
   });
 
   const setFetch = (newStatus) =>{
-    setDataSurat(prevState => ({
+    setDataDisposisi(prevState => ({
         ...prevState,
         isFetching: newStatus
       })
-    )}
+  )}
 
   useEffect(()=>{
     if(docuContext.login && docuContext.profile.accounts){
       fetchDataSurat();
     }
+
+    return (()=>{
+      console.log("UNMOUNTED")
+    })
   }, [docuContext.login]);
 
   useEffect(()=>{
-    if(dataSurat.data) {
-      const filteredData = dataSurat.data.envelopes.filter(item => {
+    if(dataDisposisi.data) {
+      const filteredData = dataDisposisi.data.envelopes.filter(item => {
         return item.emailSubject.toLowerCase().includes(searchTerm) || item.sender.userName.toLowerCase().includes(searchTerm)
       })
       setSearchResults({
         data : {
-          ...dataSurat,
+          ...dataDisposisi,
           envelopes : filteredData
         }
       })
@@ -57,21 +63,21 @@ const Draft = () =>{
   const fetchDataSurat = async () =>{
     if(!docuContext.profile.accounts[0].account_id) return;
 
-    let url = "http://localhost:3001/api/surat/draft";
+    let url = "http://localhost:3001/api/surat/get-disposisi";
     let data = {
-      access_token : docuContext.auth.access_token,
-      account_id : docuContext.profile.accounts[0].account_id
+      userId : user.id
     }
 
     try{
       setFetch(true);
       let response =  await axios({url, method : "post", data});
-      setDataSurat({
-        data: response.data,
-        isFetching: false
+      console.log(response.data.data)
+      setDataDisposisi({
+        data: response.data.data,
+        isFetching: false,
       })
     }catch(error){
-      setDataSurat({
+      setDataDisposisi({
         data: null,
         isFetching: false
       })
@@ -79,7 +85,7 @@ const Draft = () =>{
   }
 
   const conditionallyPrintTable = () =>{
-    if(dataSurat.isFetching && !dataSurat.data){
+    if(dataDisposisi.isFetching && !dataDisposisi.data){
       return (
         <div className={"loading-spinner-container"}>
           <RotateLoader
@@ -91,21 +97,27 @@ const Draft = () =>{
       )
     }else{
       if(searchTerm === ""){
-        return <SuratKeluarTable data={dataSurat.data}/>
+        return <TableDisposisi data={dataDisposisi.data}/>
       }else{
-        return <SuratKeluarTable data={searchResults.data}/>
+        return <TableDisposisi data={searchResults.data}/>
       }
     }
   }
 
   return (
     <div className={"dashboard-container"}>
-      <SideNav/>
-      <Content header_title={"Draft"}>
+        <SideNav/>
+      <Content
+        header_title = {"Surat Disposisi Masuk"}
+        crumbList = {[{
+          name : "Surat Disposisi Masuk",
+          link : "/surat-disposisi-masuk"
+        }]}
+      >
         <Tabs>
           <TabList>
             <Tab>
-              <div className="react-tabs-title-name">Semua Draft</div>
+              <div className="react-tabs-title-name">Surat Disposisi Masuk</div>
             </Tab>
             {/*<Tab>*/}
             {/*  <div className="react-tabs-title-name">Sudah Dibaca</div>*/}
@@ -122,9 +134,6 @@ const Draft = () =>{
                     value={searchTerm}
                     onChange={handleSearchChange}
                   />
-                  <Button
-                    icon={<FontAwesomeIcon icon={faPlusSquare}/>}
-                  >Buat Surat</Button>
                 </div>
                 {conditionallyPrintTable()}
               </div>
@@ -141,4 +150,4 @@ const Draft = () =>{
   )
 }
 
-export default Draft;
+export default SuratDisposisiMasuk;

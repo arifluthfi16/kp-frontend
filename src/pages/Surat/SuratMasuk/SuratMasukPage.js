@@ -11,12 +11,19 @@ import {DocusignLoginContext} from "../../../contexts/DocusignLoginContext";
 import axios from "axios"
 import { css } from "@emotion/core";
 import RotateLoader from "react-spinners/RotateLoader";
+import SuratKeluarTable from "../SuratKeluar/SuratKeluarTable";
 
 const SuratMasukPage = (props) =>{
   const {docuContext} = useContext(DocusignLoginContext);
   const [dataSurat, setDataSurat] = useState({
     data : null,
-    isFetching : true
+    isFetching : true,
+    access_token : null,
+    account_id : null,
+  });
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchResults, setSearchResults] = useState({
+    data : null
   });
 
   const setFetch = (newStatus) =>{
@@ -31,10 +38,30 @@ const SuratMasukPage = (props) =>{
       fetchDataSurat();
     }
 
+    console.log("USE EFFECT CALLED")
+
     return (()=>{
       console.log("UNMOUNTED")
     })
   }, [docuContext.login]);
+
+  useEffect(()=>{
+    if(dataSurat.data) {
+      const filteredData = dataSurat.data.envelopes.filter(item => {
+        return item.emailSubject.toLowerCase().includes(searchTerm) || item.sender.userName.toLowerCase().includes(searchTerm)
+      })
+      setSearchResults({
+        data : {
+          ...dataSurat,
+          envelopes : filteredData
+        }
+      })
+    }
+  }, [searchTerm])
+
+  const handleSearchChange = (event) =>{
+    setSearchTerm(event.target.value)
+  }
 
   const fetchDataSurat = async () =>{
     if(!docuContext.profile.accounts[0].account_id) return;
@@ -50,7 +77,11 @@ const SuratMasukPage = (props) =>{
       let response =  await axios({url, method : "post", data});
       setDataSurat({
         data: response.data,
-        isFetching: false
+        isFetching: false,
+        access_token : docuContext.auth.access_token,
+        account_id : docuContext.profile.accounts[0].account_id,
+        signerEmail : docuContext.profile.email,
+        signerName : docuContext.profile.family_name
       })
     }catch(error){
       setDataSurat({
@@ -72,7 +103,11 @@ const SuratMasukPage = (props) =>{
         </div>
       )
     }else{
-      return <TableSuratMasuk data={dataSurat.data}/>
+      if(searchTerm === ""){
+        return <TableSuratMasuk data={dataSurat.data}/>
+      }else{
+        return <TableSuratMasuk data={searchResults.data}/>
+      }
     }
   }
 
@@ -81,6 +116,10 @@ const SuratMasukPage = (props) =>{
         <SideNav/>
       <Content
         header_title = {"Surat Masuk"}
+        crumbList = {[{
+          name : "Surat Masuk",
+          link : "/surat-masuk"
+        }]}
       >
         <Tabs>
           <TabList>
@@ -99,10 +138,12 @@ const SuratMasukPage = (props) =>{
                     placeholder={"Cari surat.."}
                     outline
                     icon={<FontAwesomeIcon icon={faSearch}/>}
+                    value={searchTerm}
+                    onChange={handleSearchChange}
                   />
-                  <Button
-                    icon={<FontAwesomeIcon icon={faPlusSquare}/>}
-                  >Buat Surat</Button>
+                  {/*<Button*/}
+                  {/*  icon={<FontAwesomeIcon icon={faPlusSquare}/>}*/}
+                  {/*>Buat Surat</Button>*/}
                 </div>
                 {conditionallyPrintTable()}
               </div>

@@ -152,7 +152,6 @@ const DocusignLoginContextProvider = (props) => {
         resetStateDefault();
         setDSLoad(false)
       }
-
     }else{
       resetStateDefault();
       setDSLoad(false)

@@ -1,0 +1,69 @@
+.dashboard-container{
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    margin : 0px;
+    background-color: #F8F8F8;
+}
+
+.upload-surat-wrapper{
+    background: #fff;
+    padding-bottom: 20px;
+}
+
+.upload-surat-body-wrapper{
+    padding: 16px 40px;
+}
+
+.upload-surat-header{
+    width: 100%;
+    background-color: #fff;
+    display: flex;
+    /*padding: 0px;*/
+    border-bottom: 1px solid #D0D9E5;
+}
+
+.upload-surat-header .back-button-wrapper{
+    cursor: pointer;
+    background-color: white;
+    height: 100%;
+    padding: 16px;
+}
+
+.recipients-form-wrapper{
+    width: 100%;
+    background-color: #fff;
+    display: flex;
+    flex-direction: row;
+}
+
+.form-item-wrapper{
+    flex-grow: 1;
+}
+
+.upload-box{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 150px;
+    height: 140px;
+    background-color: #F5F8FF;
+    cursor: pointer;
+}
+
+.upload-box > p {
+    text-align: center;
+    font-size: 11px;
+    color: #758DA9;
+    font-weight: bold;
+}
+
+.upload-file-button-action{
+    display: flex;
+    flex-direction: row-reverse;
+}
+
+.upload-file-button-action > Button{
+    margin: 0px 8px;
+}

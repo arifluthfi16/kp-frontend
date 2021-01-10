@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useContext, useState} from 'react';
 import "./upload-file-surat-page.css";
 import SideNav from "../../../components/SideNav/SideNav";
 import Content from "../../../components/Content/Content";
@@ -8,17 +8,360 @@ import {faPlusSquare,faPlus, faUpload, faFileUpload, faArrowLeft} from "@fortawe
 import {DocusignLoginContext} from "../../../contexts/DocusignLoginContext";
 import axios from "axios"
 import { useHistory } from "react-router-dom";
+import Select from 'react-select';
+import UploadFileButton from "./UploadFileButton";
+import {LoginContext} from "../../../contexts/LoginContext";
 
 const UploadFileSuratPage = () =>{
   const history = useHistory();
 
-  const [dataUpload, setDataUpload] = useState(null);
+  const {docuContext} = useContext(DocusignLoginContext);
+  const {user, login} = useContext(LoginContext)
+  const [file, setFile] = useState([]);
+  const [perihal, setPerihal] = useState("")
+  const [formSurat, setFormSurat] = useState([
+    {email : "", recipient_type : ""}
+  ])
+  const [selectedValues, setSelectedValues] = useState("");
+  const [contactList, setContactList] = useState({
+    contact : [],
+    pushedContact : [],
+    isLoaded : false
+  })
+
+  useEffect( ()=>{
+    // If contact list is not loaded then
+    if(user){
+      if(contactList.isLoaded === false && contactList.contact.length <= 0){
+        // Fetch contact list data and append
+        getContactList()
+        if(contactList.contact.length >= 0){
+
+          setContactList((prevState => ({
+            ...prevState,
+            isLoaded: true
+          })))
+        }
+      }
+    }else{
+      console.log("USER IS NULL")
+    }
+  }, [contactList.isLoaded, login])
+
+  const options = [
+    { value: 'signer', label: 'Signer' },
+    { value: 'cc', label: 'Carbon Copy' },
+  ];
+
+  const renderFormsurat = () =>{
+    return formSurat.map((element, index)=>{
+      return (
+        <div className="recipients-form-wrapper mb-1">
+          <div className="form-item-wrapper mr-1">
+            <Select
+              value={{label : getSelectedValueLabel(index, "email")}}
+              name={"email"}
+              onChange={(e)=>handleValueChange(e,index, "email")}
+              options={parseContactList()}
+              styles={{
+                control: (base, state) => ({
+                  ...base,
+                  backgroundColor : "#F5F8FF",
+                  borderStyle: 'none',
+                  borderWidth: 0,
+                  '&:hover': {
+                    borderColor: 'none',
+                    backgroundColor : "#eff2f9"
+                  }, // border style on hover
+                  boxShadow: 'inset 0 -1px #748ba9', // no box-shadow
+                }),
+              }}
+              theme={theme => ({
+                ...theme,
+                borderRadius: 0,
+                colors: {
+                  ...theme.colors,
+                  primary25: '#F5F8FF',
+                  primary: '#748ba9',
+                },
+                spacing : {
+                  baseUnit : 4,
+                  controlHeight: 40,
+                }
+              })}
+            />
+          </div>
+          <div className="form-item-wrapper ml-1">
+            <Select
+              value={{label : getSelectedValueLabel(index, "recipient_type")}}
+              name={"recipient_type"}
+              onChange={(e)=>handleValueChange(e,index, "recipient_type")}
+              options={options}
+              styles={{
+                control: (base, state) => ({
+                  ...base,
+                  backgroundColor : "#F5F8FF",
+                  borderStyle: 'none',
+                  borderWidth: 0,
+                  '&:hover': {
+                    borderColor: 'none',
+                    backgroundColor : "#eff2f9"
+                  }, // border style on hover
+                  boxShadow: 'inset 0 -1px #748ba9', // no box-shadow
+                }),
+              }}
+              theme={theme => ({
+                ...theme,
+                borderRadius: 0,
+                colors: {
+                  ...theme.colors,
+                  primary25: '#F5F8FF',
+                  primary: '#748ba9',
+                },
+                spacing : {
+                  baseUnit : 4,
+                  controlHeight: 40,
+                }
+              })}
+            />
+          </div>
+          {formSurat.length > 1 &&
+              <Button
+                onClick={()=> handleDelete(index)}
+                style={{
+                  marginLeft: "16px"
+                }}
+              >
+                Delete
+              </Button>
+          }
+        </div>
+      )
+    })
+  }
+
+  const getSelectedValueLabel = (index, name) =>{
+    if(name == "recipient_type"){
+      switch(formSurat[index][name]){
+        case "cc":
+          return "Carbon Copy"
+        case "signer":
+          return "Signer"
+        default:
+          return "-"
+      }
+    }else{
+      return formSurat[index][name]
+    }
+  }
+
+  const getContactList = async (userId) => {
+    try{
+      console.log("Getting Contact List")
+      let request = await axios.post(`http://localhost:3001/api/get-assigned-contactbook`, {
+        user_id : user.id
+      });
+      setContactList((prevState =>
+        ({
+          ...prevState,
+          contact : request.data.data
+        })
+      ))
+    }catch(error){
+      console.log(error)
+    }
+  }
+
+  const parseContactList = () =>{
+    if (contactList.contact === null) return
+      // Parse original contact
+      let temp = []
+
+      temp = contactList.contact.map((el, index)=>{
+        return {
+          value : el.email,
+          label : `${el.nama_lengkap} - ${el.email}`
+        }
+      }).filter((el)=> !contactList.pushedContact.includes(el.value))
+      return temp
+  }
+
+  const handleAddNew = () => {
+    setFormSurat((prevState => ([
+      ...prevState,
+      {
+        email : '',
+        recipient_type: ''
+      }
+    ])))
+  }
+
+  const handleValueChange = (event,index, name) =>{
+
+    // Check if the the index is already filled
+    if(formSurat[index].email === ""){
+
+    }else{
+      setContactList((prevState => ({
+        ...prevState,
+        pushedContact: prevState.pushedContact.filter((el) => el !== formSurat[index].email)
+      })))
+    }
+
+    if(name === "email"){
+      // if its email remove a thing and add to push array
+      // console.log("Handle email changes")
+      setContactList((prevState => ({
+        contact: contactList.contact,
+        pushedContact: [...prevState.pushedContact, event.value]
+      })))
+    }
+    const values  = [...formSurat];
+    values[index][name] = event.value;
+    setFormSurat(values);
+  }
+
+  const handleDelete = (removeIndex) =>{
+    setFormSurat((prevState => (
+      prevState.filter((element,index)=>{
+        if(index !== removeIndex) return element
+      })
+    )))
+
+    setContactList((prevState => ({
+      ...prevState,
+      pushedContact: prevState.pushedContact.filter((el) => el !== formSurat[removeIndex].email)
+    })))
+  }
+
+  const checkForEmpty = async () =>{
+    let emptyFlag = false;
+    formSurat.forEach(element => {
+      if(!element.email || !element.recipient_type){
+        emptyFlag = true;
+      }
+    })
+    return emptyFlag
+  }
+
+  const handleSubmit = async (e) =>{
+    e.preventDefault();
+    const url = "http://localhost:3001/api/create-surat";
+
+    const config = {
+      headers: {
+        'content-type': 'application/json'
+      }
+    }
+
+    if(await checkForEmpty()){
+      alert("ADA DATA KOSONG")
+    }else{
+      // IF ALL PASSES
+      const data = await fabricateFormData();
+      const res = await axios.post(url, data, config);
+      console.log(res.data);
+      if(res.data.url){
+        window.location.replace(`${res.data.url}`)
+      }else{
+        alert(res.data.error)
+      }
+    }
+
+  }
+
+  const fabricateFormData = async () =>{
+    const formData = new FormData();
+    let documentList = await createBase64Document(file)
+
+    const data = {
+      access_token : docuContext.auth.access_token,
+      account_id : docuContext.profile.accounts[0].account_id,
+      recipients : formSurat,
+      subject : perihal,
+      dokumen : documentList,
+    }
+
+    await formData.append('account_id',docuContext.profile.accounts[0].account_id)
+    await formData.append('recipients', JSON.stringify(formSurat));
+    await formData.append('subject',perihal)
+    await formData.append('dokumen',JSON.stringify(documentList))
+    await formData.append('access_token',docuContext.auth.access_token)
+
+    return data;
+  }
+
+  // Create Base 64 Document
+  const createBase64Document = async (files) => {
+    let tempDocument = [];
+
+    for (const [index, element] of files.entries()){
+      let documentBase64 = await toBase64(element)
+      let documentObject = {
+        documentBase64: `${documentBase64}`,
+        documentId: `${index+1}`,
+        fileExtension: element.name.split('.').pop(),
+        name: `${element.name}`,
+      }
+      tempDocument[index] = documentObject;
+    }
+    return tempDocument;
+  }
+
+  const toBase64 = file => new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => {
+      let encoded = reader.result.toString().replace(/^data:(.*,)?/, '');
+      if ((encoded.length % 4) > 0) {
+        encoded += '='.repeat(4 - (encoded.length % 4));
+      }
+      resolve(encoded);
+    };
+    reader.onerror = error => reject(error);
+  });
+
+  // React Drop Zone File Handling
+  const onDrop = (files) =>{
+    if(files.length >= 1){
+      files.forEach((file,index) => {
+        addFile(file)
+      })
+    }else{
+      addFile(files)
+    }
+  }
+
+  const onRemoveFile = (file) => {
+    removeFile(file.name)
+  }
+
+  const addFile = (file) =>{
+    setFile((prevState) => [
+      ...prevState,
+      file
+    ])
+  }
+
+  const removeFile = (file_to_remove) => {
+    setFile(prevState => [
+      ...prevState.filter((el) => el.name !== file_to_remove)
+    ])
+  }
 
   return (
     <div className={"dashboard-container"}>
       <SideNav/>
       <Content
         header_title={"Kirim Surat"}
+        crumbList = {[{
+          name : "Buat Surat",
+          link : "/buat-surat"
+        },{
+          name : "Upload Surat",
+          link : "/upload-surat"
+        }
+        ]}
       >
         <div className={"upload-surat-wrapper"}>
 
@@ -29,53 +372,60 @@ const UploadFileSuratPage = () =>{
             </div>
           </div>
 
-          <div className="upload-surat-body-wrapper">
-            <p style={{textSize:'16px', fontWeight:"SemiBold", fontFamily: 'Source Sans Pro'}} className={'mb-1'}>
-              Kirim Kepada:
-            </p>
-            <div className="more-wrapper mb-2">
-              <div className="recipients-form-wrapper mb-1">
-                <div className="form-item-wrapper mr-1">
-                  <Input size={"default"} placeholder={"Email Penerima"}/>
-                </div>
-                <div className="form-item-wrapper ml-1">
-                  <Input size={"default"} placeholder={"Perlu Tanda Tangan / CC"}/>
-                </div>
-              </div>
-              <Button kind={"tertiary"} icon={(<FontAwesomeIcon icon={faPlus}/>)}>Tambah Penerima</Button>
-            </div>
-
-            <div className="perihal-wrapper mb-2">
+          <form onSubmit={handleSubmit}>
+            <div className="upload-surat-body-wrapper">
               <p style={{textSize:'16px', fontWeight:"SemiBold", fontFamily: 'Source Sans Pro'}} className={'mb-1'}>
-                Perihal:
+                Kirim Kepada:
               </p>
-              <Input size={"default"} placeholder={"Perihal"} />
-            </div>
+              {renderFormsurat()}
 
-            <div className="upload-file-wrapper">
-              <p style={{textSize:'16px', fontWeight:"SemiBold", fontFamily: 'Source Sans Pro'}} className={'mb-1'}>
-                Upload File Dokumen:
-              </p>
-              <p style={{textSize:'16px', fontWeight:"SemiBold", fontFamily: 'Source Sans Pro', color:"#748BA9"}} className={'mb-1'}>
-                Maximum file size <spam style={{fontWeight:"bold"}}>14 MB</spam>
-              </p>
+              <div className="more-wrapper mb-2">
+                <Button
+                  kind={"tertiary"}
+                  icon={(<FontAwesomeIcon icon={faPlus}/>)}
+                  onClick={handleAddNew}
+                >Tambah Penerima</Button>
+              </div>
 
-              <div className="upload-box">
-                <FontAwesomeIcon icon={faFileUpload} size={'2x'} className={"mb-2"} color={"#758DA9"}/>
-                <p>Click to Add or</p>
-                <p>Drop Document here</p>
+              <div className="perihal-wrapper mb-2">
+                <p style={{textSize:'16px', fontWeight:"SemiBold", fontFamily: 'Source Sans Pro'}} className={'mb-1'}>
+                  Perihal:
+                </p>
+                <Input
+                  size={"default"}
+                  placeholder={"Perihal"}
+                  onChange={(e)=> setPerihal(e.target.value)}
+                />
+
+              </div>
+
+              <div style={{margin: "24px 0px"}}>
+                <UploadFileButton
+                  handleOnDrop={onDrop}
+                  handleOnRemove = {onRemoveFile}
+                />
+              </div>
+
+              <div className="upload-file-button-action">
+                <Button
+                  htmlType={'submit'}
+                  onClick={(e)=>handleSubmit(e)}
+                  kind={"primary"}
+                >
+                  Kirim
+                </Button>
+
+                <Button
+                  kind={"tertiary"}
+                  onClick={()=>{
+                    console.log(file)
+                  }}
+                >
+                  Check File <p style={{color: "#CCCC00"}}><strong>[DEV]</strong></p>
+                </Button>
               </div>
             </div>
-
-            <div className="upload-file-button-action">
-              <Button>
-                Persiapkan Markah Tandatangan
-              </Button>
-              <Button>
-                Simpan
-              </Button>
-            </div>
-          </div>
+          </form>
 
         </div>
 

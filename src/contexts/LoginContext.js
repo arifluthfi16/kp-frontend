@@ -23,6 +23,7 @@ const LoginContextProvider = (props) => {
     let user = JSON.parse(localStorage.getItem("auth"));
     if(user){
       // Need to verify if the token still valid
+      console.log(user)
       setLogin(true);
       setUser(user);
       setLoginError(null);
@@ -36,6 +37,16 @@ const LoginContextProvider = (props) => {
       setLogin(true);
       setLoginError(null);
     }
+  }
+
+  const companyLogout = () =>{
+    localStorage.removeItem("auth");
+    resetStateDefault();
+  }
+
+  const resetStateDefault = () =>{
+    setUser(null)
+    setLogin(false)
   }
 
   const signin = (username, password) => {
@@ -61,12 +72,13 @@ const LoginContextProvider = (props) => {
         }
       })
       .catch(function (error) {
+        console.log(error)
         console.log("Login Failed");
       });
   }
 
   return (
-    <LoginContext.Provider value={{login,user, checkLogin, mockLogin, signin}}>
+    <LoginContext.Provider value={{login,user, checkLogin, mockLogin, signin, companyLogout}}>
       {props.children}
     </LoginContext.Provider>
   );

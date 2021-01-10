@@ -18,6 +18,14 @@ const SuratKeluarPage = () =>{
     data : null,
     isFetching : true
   });
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchResults, setSearchResults] = useState({
+    data : null
+  });
+
+  const handleSearchChange = (event) =>{
+    setSearchTerm(event.target.value)
+  }
 
   const setFetch = (newStatus) =>{
     setDataSurat(prevState => ({
@@ -31,6 +39,20 @@ const SuratKeluarPage = () =>{
       fetchDataSurat();
     }
   }, [docuContext.login]);
+
+  useEffect(()=>{
+    if(dataSurat.data) {
+      const filteredData = dataSurat.data.envelopes.filter(item => {
+        return item.emailSubject.toLowerCase().includes(searchTerm) || item.sender.userName.toLowerCase().includes(searchTerm)
+      })
+      setSearchResults({
+        data : {
+          ...dataSurat,
+          envelopes : filteredData
+        }
+      })
+    }
+  }, [searchTerm])
 
   const fetchDataSurat = async () =>{
     if(!docuContext.profile.accounts[0].account_id) return;
@@ -68,14 +90,24 @@ const SuratKeluarPage = () =>{
         </div>
       )
     }else{
-      return <SuratKeluarTable data={dataSurat.data}/>
+      if(searchTerm === ""){
+        return <SuratKeluarTable data={dataSurat.data}/>
+      }else{
+        return <SuratKeluarTable data={searchResults.data}/>
+      }
     }
   }
 
   return (
     <div className={"dashboard-container"}>
         <SideNav/>
-      <Content header_title={"Surat Keluar"}>
+      <Content
+        header_title={"Surat Keluar"}
+        crumbList = {[{
+          name : "Surat Keluar",
+          link : "/surat-keluar"
+        }]}
+      >
         <Tabs>
           <TabList>
             <Tab>
@@ -93,10 +125,12 @@ const SuratKeluarPage = () =>{
                     placeholder={"Cari surat.."}
                     outline
                     icon={<FontAwesomeIcon icon={faSearch}/>}
+                    value={searchTerm}
+                    onChange={handleSearchChange}
                   />
-                  <Button
-                    icon={<FontAwesomeIcon icon={faPlusSquare}/>}
-                  >Buat Surat</Button>
+                  {/*<Button*/}
+                  {/*  icon={<FontAwesomeIcon icon={faPlusSquare}/>}*/}
+                  {/*>Buat Surat</Button>*/}
                 </div>
                 {conditionallyPrintTable()}
               </div>

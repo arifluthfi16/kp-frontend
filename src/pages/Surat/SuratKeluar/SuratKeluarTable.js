@@ -6,20 +6,20 @@ import {faTrash, faInfo, faDownload, faSignature} from "@fortawesome/free-solid-
 
 
 const SuratKeluarTable = (props) =>{
-  console.log(props.data)
 
   const conditionallyPrintTable = () =>{
-    if(!props.data){
+    if(!props.data || !props.data.envelopes){
       return <tr>
         <td colSpan={5}><h3>Too bad it's empty</h3></td>
       </tr>
     }else{
       return props.data.envelopes.map((listValue, index)=>{
+        console.log(listValue.recipients)
         return (
           <tr key={index}>
             <td>{listValue.emailSubject}</td>
             <td>{dateParser(listValue.sentDateTime)}</td>
-            <td>{listValue.recipients.signers[0].name}</td>
+            <td>{(listValue.recipients.signers.length === 0 ? listValue.recipients.carbonCopies[0].name : listValue.recipients.signers[0].name)}</td>
             <td>{statusTranslator(listValue.status)}</td>
             <td>{conditionallyPrintButton(listValue.status)}</td>
           </tr>

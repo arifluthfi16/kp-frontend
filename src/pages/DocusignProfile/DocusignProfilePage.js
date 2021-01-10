@@ -4,9 +4,11 @@ import SideNav from "../../components/SideNav/SideNav";
 import Content from "../../components/Content/Content";
 import axios from "axios";
 import {DocusignLoginContext} from "../../contexts/DocusignLoginContext";
+import {LoginContext} from "../../contexts/LoginContext";
 
 const DocusignProfilePage = (props) =>{
   const {docuContext, checkDocuLogin} = useContext(DocusignLoginContext);
+  const {user} = useContext(LoginContext)
 
   useEffect(()=>{
     checkDocuLogin();
@@ -20,7 +22,7 @@ const DocusignProfilePage = (props) =>{
           <h3>Profile Data</h3>
           <table>
             <tr>
-              <td>Account ID :</td>
+              <td width="50%">Account ID :</td>
               <td>{profileData.accounts[0].account_id}</td>
             </tr>
             <tr>
@@ -31,6 +33,23 @@ const DocusignProfilePage = (props) =>{
               <td>Email :</td>
               <td>{profileData.email}</td>
             </tr>
+            <tr>
+              <td>Auth Code : </td>
+              <td>{docuContext.auth.access_token}</td>
+            </tr>
+            <tr>
+              <td>username : </td>
+              <td>{user.username}</td>
+            </tr>
+            <tr>
+              <td>Email : </td>
+              <td>{user.email} </td>
+            </tr>
+            <tr>
+              <td>User ID : </td>
+              <td>{user.id}</td>
+            </tr>
+
           </table>
         </div>
       )

@@ -35,71 +35,64 @@ const SideNav = ()=>{
 
   return(
     <div className={"sidenav"}>
-
       <div className="row align-items-center nav-border-bottom pt-2 pb-3 pl-3">
         <Link to={"/"}>
           <img src={Logo} alt="Home"/>
         </Link>
       </div>
-      <Accordion
-        className="accordion-style"
-        onClick={handleSidenavOnClick}
-      >
-          <AccordionItem
-            className="accordion-style"
-            title="Surat"
-            id="surat-sidenav-btn"
-            open={!!navOpen}
-          >
-            <ul>
-              <li>
-                  <Link to={"/buat-surat"} style={{textDecoration : "none", color: "#fff"}}>
-                    <div className="row">
-                      <FontAwesomeIcon icon={faPlusSquare} className="mr-2" color={"#748BA9"}/>
-                      <label className={"cursor-pointer"}>Kirim Surat</label>
-                    </div>
-                  </Link>
-              </li>
-              <li>
-                <Link to={"/surat-masuk"} style={{textDecoration : "none", color: "#fff"}}>
-                  <div className="row">
-                    <FontAwesomeIcon icon={faInbox} className="mr-2" color={"#748BA9"}/>
-                    <label className={"cursor-pointer"}>Surat Masuk</label>
-                  </div>
-                </Link>
-              </li>
-              <li>
-                <Link to={"/surat-keluar"} style={{textDecoration : "none", color: "#fff"}}>
-                  <div className="row">
-                    <FontAwesomeIcon icon={faPaperPlane} className="mr-2" color={"#748BA9"}/>
-                    <label className={"cursor-pointer"}>Surat Keluar</label>
-                  </div>
-                </Link>
-              </li>
-              <li>
-                <Link to={"/draft"} style={{textDecoration : "none", color: "#fff"}}>
-                  <div className="row">
-                    <FontAwesomeIcon icon={faFileWord} className="mr-2" color={"#748BA9"}/>
-                    <label className={"cursor-pointer"}>Draft</label>
-                  </div>
-                </Link>
-              </li>
-            </ul>
-          </AccordionItem>
-
-          {/* Development Only */}
-          <AccordionItem
-            className="accordion-style"
-            title="Docusign Profile"
-          >
+      <div className="ml-1 mt-2">
+        <ul className={""}>
+          <li>
+            <Link to={"/buat-surat"} style={{textDecoration : "none", color: "#fff"}}>
+              <div className="row">
+                <FontAwesomeIcon icon={faPlusSquare} className="mr-2" color={"#748BA9"}/>
+                <label className={"cursor-pointer"}>Buat Surat</label>
+              </div>
+            </Link>
+          </li>
+          <li>
+            <Link to={"/surat-masuk"} style={{textDecoration : "none", color: "#fff"}}>
+              <div className="row">
+                <FontAwesomeIcon icon={faInbox} className="mr-2" color={"#748BA9"}/>
+                <label className={"cursor-pointer"}>Surat Masuk</label>
+              </div>
+            </Link>
+          </li>
+          <li>
+            <Link to={"/surat-keluar"} style={{textDecoration : "none", color: "#fff"}}>
+              <div className="row">
+                <FontAwesomeIcon icon={faPaperPlane} className="mr-2" color={"#748BA9"}/>
+                <label className={"cursor-pointer"}>Surat Keluar</label>
+              </div>
+            </Link>
+          </li>
+          <li>
+            <Link to={"/surat-disposisi-masuk"} style={{textDecoration : "none", color: "#fff"}}>
+              <div className="row">
+                <FontAwesomeIcon icon={faInbox} className="mr-2" color={"#748BA9"}/>
+                <label className={"cursor-pointer"}>Surat Disposisi Masuk</label>
+              </div>
+            </Link>
+          </li>
+          {/*<li>*/}
+          {/*  <Link to={"/draft"} style={{textDecoration : "none", color: "#fff"}}>*/}
+          {/*    <div className="row">*/}
+          {/*      <FontAwesomeIcon icon={faFileWord} className="mr-2" color={"#748BA9"}/>*/}
+          {/*      <label className={"cursor-pointer"}>Draft</label>*/}
+          {/*    </div>*/}
+          {/*  </Link>*/}
+          {/*</li>*/}
+          <li>
             <Link to={"/docusign-profile"} style={{textDecoration : "none", color: "#fff"}}>
               <div className="row">
                 <FontAwesomeIcon icon={faPlusSquare} className="mr-2" color={"#748BA9"}/>
-                <label className={"cursor-pointer"}>Profile Docusign</label>
+                <label className={"cursor-pointer"}>Profile Docusign <strong style={{color:"yellow"}}>[DEV]</strong></label>
               </div>
             </Link>
-          </AccordionItem>
-      </Accordion>
+          </li>
+        </ul>
+      </div>
+
     </div>
   )
 }

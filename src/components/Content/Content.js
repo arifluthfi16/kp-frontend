@@ -13,9 +13,13 @@ import {DocusignLoginContext} from "../../contexts/DocusignLoginContext";
 import {LoginContext} from "../../contexts/LoginContext";
 
 const Content = (props)=>{
-
   const {docuContext, docusignLogout, DSLoad} = useContext(DocusignLoginContext);
-  const {login, auth} = useContext(LoginContext);
+  const {companyLogout, user} = useContext(LoginContext);
+
+  const logoutAll = () =>{
+    companyLogout()
+    docusignLogout()
+  }
 
   const docusignLoginAlert = () =>{
     if(DSLoad && !docuContext.login){
@@ -29,7 +33,7 @@ const Content = (props)=>{
     if(docuContext.login){
       return (
         <Alert type={"success"}>
-          <div className={"align-items-center"}>Docusign Terhubung! <label
+          <div className={"align-items-center"}>Akun Terhubung! <label
             style={
               {
                 margin: 0,
@@ -39,9 +43,9 @@ const Content = (props)=>{
                 fontWeight : "600",
                 color : "#0A62A9"
               }}
-            onClick={()=>{docusignLogout()}}
+            onClick={()=>{logoutAll()}}
           >
-            Logout Docusign
+            Logout
           </label>
 
           </div>
@@ -81,13 +85,15 @@ const Content = (props)=>{
             {docusignLoginAlert()}
             <UserProfileBadge
               profile_picture = "../../images/sample.png"
-              name = "Stella Jang"
-              email = "stella@gmail.com"
+              name = {user ? user.username : "-"}
+              email = {user ? user.email : "-"}
               className={"ml-3"}
             />
           </div>
         </div>
-        <BreadcrumbWrapper />
+        <BreadcrumbWrapper
+          data = {props.crumbList}
+        />
         <div className="content-wrapper">
           {props.children}
         </div>

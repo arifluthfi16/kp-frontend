@@ -25,13 +25,22 @@ import { createBrowserHistory } from "history";
 // Context and Providers
 import {LoginContext} from "./contexts/LoginContext";
 import {DocusignLoginContext} from "./contexts/DocusignLoginContext";
+import SuratDisposisiMasuk from "./pages/Surat/SuratDisposisiMasuk/SuratDisposisiMasuk";
+import CreateDisposisi from "./pages/Surat/CreateDisposisi/CreateDisposisi";
 
 const App = () => {
   const {docuContext, checkDocuLogin} = useContext(DocusignLoginContext);
+  const {login, checkLogin} = useContext(LoginContext)
 
   useEffect(()=>{
     checkDocuLogin();
+    // console.log(docuContext.login)
   }, [docuContext.login]);
+
+  useEffect(()=>{
+    checkLogin()
+    // console.log("Web Login Status : ", login)
+  }, [login])
 
   const history = createBrowserHistory();
   return (
@@ -42,11 +51,13 @@ const App = () => {
           <ProtectedRoute exact path={"/"} component={DashboardPage}/>
           <ProtectedRoute exact path={"/surat-masuk"} component={SuratMasukPage}/>
           <ProtectedRoute exact path={"/buat-surat"} component={BuatSuratPage}/>
+          <ProtectedRoute path={"/buat-disposisi/:id"} component={CreateDisposisi}/>
           <ProtectedRoute exact path={"/surat-keluar"} component={SuratKeluarPage}/>
           <ProtectedRoute exact path={"/draft"} component={Draft}/>
           <ProtectedRoute exact path={"/proses-login"} component={ProcessDocusignCode}/>
           <ProtectedRoute exact path={"/docusign-profile"} component={DocusignProfilePage}/>
           <ProtectedRoute exact path={"/buat-surat/upload-surat"} component={UploadFileSuratPage}/>
+          <ProtectedRoute exact path={"/surat-disposisi-masuk"} component={SuratDisposisiMasuk}/>
           <ProtectedRoute path={"/detail-surat/"} component={DetailSuratPage}/>
         </Switch>
       </Router>
