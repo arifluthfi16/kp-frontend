@@ -25,6 +25,8 @@ const TableSuratMasuk = (props) =>{
       </tr>
     }else{
       return props.data.envelopes.map((listValue, index)=>{
+        if(listValue.status === "voided") return null
+
         return (
           <tr
             key={index}
@@ -118,8 +120,6 @@ const TableSuratMasuk = (props) =>{
             Disposisi
           </Button>
         </Link>
-
-
     )
   }
 
@@ -148,6 +148,39 @@ const TableSuratMasuk = (props) =>{
         }}
       >Download</Button>
     )
+  }
+
+  const createHapusButton = (envelopeId) =>{
+    return (
+      <Button
+        kind={"danger"}
+        className="mr-2"
+        size={"small"}
+        icon={<FontAwesomeIcon icon={faTrash}/>}
+        onClick={()=>handleHapusSurat(envelopeId)}
+      >Hapus</Button>
+    )
+  }
+
+  const handleHapusSurat = async (envelope_id) =>{
+    const url = `http://localhost:3001/api/surat/hapus-surat`
+
+    console.log(docuContext.auth)
+
+    let data = {
+      account_id : docuContext.profile.accounts[0].account_id,
+      envelope_id,
+      access_token : docuContext.auth.access_token
+    }
+
+    try{
+      let response =  await axios.post(url, data, {
+
+      })
+      console.log(response)
+    }catch(err){
+      console.log(err)
+    }
   }
 
   const createSignButton = (envelopeData) => {
@@ -197,25 +230,12 @@ const TableSuratMasuk = (props) =>{
           <div className="row justify-space-between" style={{margin: "0px 16px"}}>
             {createDownloadButton(envelopeId)}
             {createDisposisiButton(envelopeId)}
-            <Button
-              kind={"danger"}
-              className="mr-2"
-              size={"small"}
-              icon={<FontAwesomeIcon icon={faTrash}/>}
-            >Hapus</Button>
           </div>
         )
       case "sent" :
         return (
           <div className="row justify-space-between" style={{margin: "0px 16px"}}>
             {createSignButton(envelopeData)}
-            {createDisposisiButton(envelopeId)}
-            <Button
-              kind={"danger"}
-              className="mr-2"
-              size={"small"}
-              icon={<FontAwesomeIcon icon={faTrash}/>}
-            >Hapus</Button>
           </div>
         )
       case "created" :
@@ -226,12 +246,6 @@ const TableSuratMasuk = (props) =>{
           <div className="row justify-space-between" style={{margin: "0px 16px"}}>
             {createDownloadButton(envelopeId)}
             {createDisposisiButton(envelopeId)}
-            <Button
-              kind={"danger"}
-              className="mr-2"
-              size={"small"}
-              icon={<FontAwesomeIcon icon={faTrash}/>}
-            >Hapus</Button>
           </div>
         )
       default:

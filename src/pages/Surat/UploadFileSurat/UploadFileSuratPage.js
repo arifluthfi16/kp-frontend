@@ -20,7 +20,7 @@ const UploadFileSuratPage = () =>{
   const [file, setFile] = useState([]);
   const [perihal, setPerihal] = useState("")
   const [formSurat, setFormSurat] = useState([
-    {email : "", recipient_type : ""}
+    {email : "", recipient_type : "", name :""}
   ])
   const [selectedValues, setSelectedValues] = useState("");
   const [contactList, setContactList] = useState({
@@ -179,10 +179,13 @@ const UploadFileSuratPage = () =>{
 
       temp = contactList.contact.map((el, index)=>{
         return {
-          value : el.email,
+          value : {
+            email : el.email,
+            name : el.nama_lengkap
+          },
           label : `${el.nama_lengkap} - ${el.email}`
         }
-      }).filter((el)=> !contactList.pushedContact.includes(el.value))
+      }).filter((el)=> !contactList.pushedContact.includes(el.value.email))
       return temp
   }
 
@@ -191,13 +194,13 @@ const UploadFileSuratPage = () =>{
       ...prevState,
       {
         email : '',
-        recipient_type: ''
+        recipient_type: '',
+        name : ''
       }
     ])))
   }
 
   const handleValueChange = (event,index, name) =>{
-
     // Check if the the index is already filled
     if(formSurat[index].email === ""){
 
@@ -213,12 +216,19 @@ const UploadFileSuratPage = () =>{
       // console.log("Handle email changes")
       setContactList((prevState => ({
         contact: contactList.contact,
-        pushedContact: [...prevState.pushedContact, event.value]
+        pushedContact: [...prevState.pushedContact, event.value.email]
       })))
+
+      // Handle to attach name and email
+      const values  = [...formSurat];
+      values[index][name] = event.value.email;
+      values[index]["name"] = event.value.name;
+      setFormSurat(values);
+    }else{
+      const values  = [...formSurat];
+      values[index][name] = event.value;
+      setFormSurat(values);
     }
-    const values  = [...formSurat];
-    values[index][name] = event.value;
-    setFormSurat(values);
   }
 
   const handleDelete = (removeIndex) =>{
@@ -364,7 +374,9 @@ const UploadFileSuratPage = () =>{
         ]}
       >
         <div className={"upload-surat-wrapper"}>
-
+          {
+            contactList.pushedContact.map((el)=> <label>{el.email}</label>)
+          }
           <div className={"upload-surat-header"}>
             <div className="back-button-wrapper" onClick={()=> history.goBack()}>
               <FontAwesomeIcon icon={faArrowLeft} size="md"/>
@@ -422,6 +434,15 @@ const UploadFileSuratPage = () =>{
                   }}
                 >
                   Check File <p style={{color: "#CCCC00"}}><strong>[DEV]</strong></p>
+                </Button>
+
+                <Button
+                  kind={"tertiary"}
+                  onClick={()=>{
+                    console.log(formSurat)
+                  }}
+                >
+                  Check Users <p style={{color: "#CCCC00"}}><strong>[DEV]</strong></p>
                 </Button>
               </div>
             </div>

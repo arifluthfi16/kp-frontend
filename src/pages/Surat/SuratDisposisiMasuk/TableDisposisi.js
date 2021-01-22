@@ -31,7 +31,7 @@ const TableDisposisi = (props) =>{
             <td>{listValue.perihal}</td>
             <td>{listValue.isi_note}</td>
             <td>{dateParser(listValue.tanggal_dibuat)}</td>
-            <td>{listValue.pengirim}</td>
+            <td>{listValue.nama_pengirim}</td>
             <td>{conditionallyPrintButton(listValue)}</td>
           </tr>
         )
@@ -128,13 +128,13 @@ const TableDisposisi = (props) =>{
 
     return (<div className="row justify-space-between" style={{margin: "0px 16px"}}>
       {createDownloadButton(id_disposisi)}
-      {createDetailButton(id_disposisi)}
-      <Button
-        kind={"danger"}
-        className="mr-2"
-        size={"small"}
-        icon={<FontAwesomeIcon icon={faTrash}/>}
-      >Hapus</Button>
+      {/*{createDetailButton(id_disposisi)}*/}
+      {/*<Button*/}
+      {/*  kind={"danger"}*/}
+      {/*  className="mr-2"*/}
+      {/*  size={"small"}*/}
+      {/*  icon={<FontAwesomeIcon icon={faTrash}/>}*/}
+      {/*>Hapus</Button>*/}
     </div>)
   }
 
@@ -152,7 +152,7 @@ const TableDisposisi = (props) =>{
     try{
       let response =  await axios({url, method : "post", data, responseType: 'blob'});
       console.log(response)
-      await download(response.data, 'test.zip');
+      await download(response.data, `Disposisi - ${Date.now()}.zip`);
     }catch(error){
       console.log(error)
     }

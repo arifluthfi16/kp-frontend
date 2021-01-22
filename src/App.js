@@ -20,6 +20,8 @@ import UploadFileSuratPage from "./pages/Surat/UploadFileSurat/UploadFileSuratPa
 import Draft from "./pages/Surat/Draft/DraftPage";
 import ProcessDocusignCode from "./pages/ProcessDocusignCode/ProcessDocusignCode";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
+import AdminRoute from "./components/AdminRoute/AdminRoute";
+import AdminDashboardPage from "./pages/Admin/Dashboard/AdminDashboardPage";
 import { createBrowserHistory } from "history";
 
 // Context and Providers
@@ -59,6 +61,7 @@ const App = () => {
           <ProtectedRoute exact path={"/buat-surat/upload-surat"} component={UploadFileSuratPage}/>
           <ProtectedRoute exact path={"/surat-disposisi-masuk"} component={SuratDisposisiMasuk}/>
           <ProtectedRoute path={"/detail-surat/"} component={DetailSuratPage}/>
+          <AdminRoute exact path="/admin" component={AdminDashboardPage}/>
         </Switch>
       </Router>
     </div>

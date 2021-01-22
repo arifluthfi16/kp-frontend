@@ -16,8 +16,12 @@ const LoginPage = (props) => {
   useEffect(()=>{
     // Check if user already logged in
     checkLogin();
-    if(login){
+    if(!user) return
+    console.log(user.roles[0])
+    if(user.roles[0] === "user"){
       window.location.replace("/");
+    }else if(user.roles[0] === "admin"){
+      window.location.replace("/admin");
     }
   }, [login])
 

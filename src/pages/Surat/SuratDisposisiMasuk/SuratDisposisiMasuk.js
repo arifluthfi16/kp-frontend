@@ -62,7 +62,7 @@ const SuratDisposisiMasuk = (props) =>{
 
   const fetchDataSurat = async () =>{
     if(!docuContext.profile.accounts[0].account_id) return;
-
+    console.log("Fetching data disposisi")
     let url = "http://localhost:3001/api/surat/get-disposisi";
     let data = {
       userId : user.id
@@ -76,7 +76,9 @@ const SuratDisposisiMasuk = (props) =>{
         data: response.data.data,
         isFetching: false,
       })
+
     }catch(error){
+      console.log(error)
       setDataDisposisi({
         data: null,
         isFetching: false

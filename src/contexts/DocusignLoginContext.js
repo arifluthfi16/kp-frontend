@@ -1,5 +1,6 @@
 import React, {createContext, useState, useContext, useEffect} from 'react';
 import axios from 'axios';
+import {LoginContext} from "./LoginContext";
 export const DocusignLoginContext = createContext();
 
 const DocusignLoginContextProvider = (props) => {
@@ -39,13 +40,43 @@ const DocusignLoginContextProvider = (props) => {
 
   }
 
+  const checkEmailLink = async (access_token) =>{
+    // Fetch Docusign Email
+    let url ="http://localhost:3001/api/get-profile";
+    let data = {
+      access_token
+    }
+
+    let finalResult = await axios({
+      url : url,
+      method : "post",
+      data : data
+    }).then(async (response)=>{
+      let docuEmail = response.data.email;
+      let user = await JSON.parse(localStorage.getItem("auth"));
+      let emailUser = user.email;
+
+      console.log(`${docuEmail} === ${emailUser} = ${docuEmail === emailUser}`)
+      if(docuEmail === emailUser){
+        console.log("Account Link established")
+        return true
+      }
+    }).catch((error)=>{
+      console.log("Failed To Validate Account Link")
+      console.log(error)
+      return false
+    })
+
+    return finalResult
+  }
+
   const getAccessCode = (loginCode) =>{
     // const auth = localStorage.getItem("docusign_auth");
     let data = {
       code: loginCode
     }
 
-    console.log("RUN GET ACCESS CODE")
+    console.log("GETTING DOCUSIGN ACCESS CODE")
 
     axios.post('http://localhost:3001/api/get-docusign-acces-code',
       data)
@@ -63,17 +94,25 @@ const DocusignLoginContextProvider = (props) => {
             }
           });
         }else{
-          localStorage.setItem("docusign_auth", JSON.stringify(response.data));
-          setDocuContext({
-            login: true,
-            auth: response.data,
-            profile : null,
-            error: {
-              status : false,
-              message : null
+          checkEmailLink(response.data.access_token).then((res)=>{
+            if(res){
+              console.log("Account link is true, redirecting")
+              localStorage.setItem("docusign_auth", JSON.stringify(response.data));
+              setDocuContext({
+                login: true,
+                auth: response.data,
+                profile : null,
+                error: {
+                  status : false,
+                  message : null
+                }
+              });
+              window.location.replace("/")
+            }else{
+              console.log("Account link is false, logout")
+              docusignLogout()
             }
-          });
-          window.location.replace("/")
+          })
         }
       })
       .catch(function (error) {
@@ -137,6 +176,7 @@ const DocusignLoginContextProvider = (props) => {
         if(response.data.error){
           // Try to renew token
           console.log("Should renew token")
+          alert("Renew Token")
         }else{
           setDocuContext((prevState)=> ({
             ...prevState,

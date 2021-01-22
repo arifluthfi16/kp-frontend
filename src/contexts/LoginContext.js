@@ -66,7 +66,11 @@ const LoginContextProvider = (props) => {
           setUser(response.data);
           setLoginError(null);
           console.log("login succeed");
-          window.location.replace("/");
+          if(response.data.roles[0] === "user"){
+            window.location.replace("/");
+          }else if(response.data.roles[0] === "admin"){
+            window.location.replace("/admin");
+          }
         }else{
           console.log("Failed to login something is wrong")
         }

@@ -1,11 +1,16 @@
-import React from "react";
+import React, {useContext} from "react";
 import "./table-content.css";
 import { Button } from 'bima-design';
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faTrash, faInfo, faDownload, faSignature} from "@fortawesome/free-solid-svg-icons";
+import axios from "axios";
+import {DocusignLoginContext} from "../../../contexts/DocusignLoginContext";
+import {Link} from "react-router-dom";
+import download from "downloadjs";
 
 
 const SuratKeluarTable = (props) =>{
+  const {docuContext} = useContext(DocusignLoginContext);
 
   const conditionallyPrintTable = () =>{
     if(!props.data || !props.data.envelopes){
@@ -14,18 +19,103 @@ const SuratKeluarTable = (props) =>{
       </tr>
     }else{
       return props.data.envelopes.map((listValue, index)=>{
-        console.log(listValue.recipients)
+        if(listValue.status === "voided") return null
         return (
           <tr key={index}>
             <td>{listValue.emailSubject}</td>
             <td>{dateParser(listValue.sentDateTime)}</td>
             <td>{(listValue.recipients.signers.length === 0 ? listValue.recipients.carbonCopies[0].name : listValue.recipients.signers[0].name)}</td>
             <td>{statusTranslator(listValue.status)}</td>
-            <td>{conditionallyPrintButton(listValue.status)}</td>
+            <td>{conditionallyPrintButton({status : listValue.status, envelope_id : listValue.envelopeId})}</td>
           </tr>
         )
       })
     }
+  }
+
+  const createDisposisiButton = (envelopeId, disableStatus=false) =>{
+    return (
+      <Link
+        to={`/buat-disposisi/${envelopeId}`}
+        style={{
+          textDecoration : "none",
+          cursor : "auto"
+        }}
+      >
+        <Button
+          disabled={disableStatus}
+          className="mr-2"
+          size={"small"}
+          icon={<FontAwesomeIcon icon={faInfo}/>}
+          onClick={(e)=> {
+            e.stopPropagation()
+            console.log(`/buat-disposisi/${envelopeId}`)
+          }}
+        >
+          Disposisi
+        </Button>
+      </Link>
+    )
+  }
+
+  const createHapusButton = (envelopeId) =>{
+    return (
+      <Button
+        kind={"danger"}
+        className="mr-2"
+        size={"small"}
+        icon={<FontAwesomeIcon icon={faTrash}/>}
+        onClick={()=>handleHapusSurat(envelopeId)}
+      >Hapus</Button>
+    )
+  }
+
+
+  const timeConverter = (UNIX_timestamp) => {
+    let a = new Date(UNIX_timestamp * 1000);
+    let months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    let year = a.getFullYear();
+    let month = months[a.getMonth()];
+    let date = a.getDate();
+    let hour = a.getHours();
+    let min = a.getMinutes();
+    let sec = a.getSeconds();
+    let time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec ;
+    return time;
+  }
+
+  const handleDownloadButton = async (payload) =>{
+    console.log("Download Initiated")
+    if(!docuContext.profile.accounts[0].account_id) return;
+
+    let url = "http://localhost:3001/api/document/download";
+
+    let data = {
+      access_token : docuContext.auth.access_token,
+      accountId : docuContext.profile.accounts[0].account_id,
+      envelopeId: payload.envelopeId,
+    }
+
+    try{
+      let response =  await axios({url, method : "post", data, responseType: 'blob'});
+      console.log(response)
+      await download(response.data, `${"Surat"} - ${timeConverter(Date.now())}.zip`);
+    }catch(error){
+      console.log(error)
+    }
+  }
+
+  const createDownloadButton = (envelopeId) =>{
+    return (
+      <Button
+        className="mr-2"
+        size={"small"}
+        icon={<FontAwesomeIcon icon={faDownload}/>}
+        onClick={async ()=>{
+          await handleDownloadButton({envelopeId})
+        }}
+      >Download</Button>
+    )
   }
 
   const dateParser = (dateInput) =>{
@@ -79,53 +169,52 @@ const SuratKeluarTable = (props) =>{
         return "Draft"
       case "delivered":
         return "Penerima Sudah Tandatangan"
+      case "voided":
+        return "Surat Sudah Dihapus"
       default:
         return status
     }
   }
 
-  const conditionallyPrintButton = (status) =>{
+  const handleHapusSurat = async (envelope_id) =>{
+    const url = `http://localhost:3001/api/surat/hapus-surat`
+
+    console.log(docuContext.auth)
+
+    let data = {
+      account_id : docuContext.profile.accounts[0].account_id,
+      envelope_id,
+      access_token : docuContext.auth.access_token
+    }
+
+    try{
+      let response =  await axios.post(url, data, {
+
+      })
+      console.log(response)
+    }catch(err){
+      console.log(err)
+    }
+  }
+
+  const conditionallyPrintButton = (envelopeData) =>{
+    const {status, envelope_id} = envelopeData
+
     switch (status) {
       case "completed" :
         return (
           <div className="row justify-space-between" style={{margin: "0px 16px"}}>
-            <Button
-              className="mr-2"
-              size={"small"}
-              icon={<FontAwesomeIcon icon={faDownload}/>}
-            >Download</Button>
-            <Button
-              className="mr-2"
-              size={"small"}
-              icon={<FontAwesomeIcon icon={faInfo}/>}
-            >Detail</Button>
-            <Button
-              kind={"danger"}
-              className="mr-2"
-              size={"small"}
-              icon={<FontAwesomeIcon icon={faTrash}/>}
-            >Hapus</Button>
+            {createDownloadButton(envelope_id)}
+            {createDisposisiButton(envelope_id)}
+            {createHapusButton(envelope_id)}
           </div>
         )
       case "sent" :
         return (
           <div className="row justify-space-between" style={{margin: "0px 16px"}}>
-            <Button
-              className="mr-2"
-              size={"small"}
-              icon={<FontAwesomeIcon icon={faSignature}/>}
-            >Sign</Button>
-            <Button
-              className="mr-2"
-              size={"small"}
-              icon={<FontAwesomeIcon icon={faInfo}/>}
-            >Detail</Button>
-            <Button
-              kind={"danger"}
-              className="mr-2"
-              size={"small"}
-              icon={<FontAwesomeIcon icon={faTrash}/>}
-            >Hapus</Button>
+            {createDownloadButton(envelope_id)}
+            {createDisposisiButton(envelope_id, true)}
+            {createHapusButton(envelope_id)}
           </div>
         )
       case "created" :
@@ -134,24 +223,13 @@ const SuratKeluarTable = (props) =>{
         // Sudah Di Tanda Tangan
         return (
           <div className="row justify-space-between" style={{margin: "0px 16px"}}>
-            <Button
-              className="mr-2"
-              size={"small"}
-              icon={<FontAwesomeIcon icon={faDownload}/>}
-            >Download</Button>
-            <Button
-              className="mr-2"
-              size={"small"}
-              icon={<FontAwesomeIcon icon={faInfo}/>}
-            >Detail</Button>
-            <Button
-              kind={"danger"}
-              className="mr-2"
-              size={"small"}
-              icon={<FontAwesomeIcon icon={faTrash}/>}
-            >Hapus</Button>
+            {createDownloadButton(envelope_id)}
+            {createDisposisiButton(envelope_id)}
+            {createHapusButton(envelope_id)}
           </div>
         )
+      case "voided":
+        return "Dihapus"
       default:
         return status
     }
