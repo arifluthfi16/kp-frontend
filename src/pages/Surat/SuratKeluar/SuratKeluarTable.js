@@ -1,4 +1,4 @@
-import React, {useContext} from "react";
+import React, {useContext, useState} from "react";
 import "./table-content.css";
 import { Button } from 'bima-design';
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
@@ -11,14 +11,17 @@ import download from "downloadjs";
 
 const SuratKeluarTable = (props) =>{
   const {docuContext} = useContext(DocusignLoginContext);
+  const [data, setData] = useState(props.data)
 
   const conditionallyPrintTable = () =>{
-    if(!props.data || !props.data.envelopes){
+    console.log(data);
+
+    if(!data || !data.envelopes){
       return <tr>
         <td colSpan={5}><h3>Too bad it's empty</h3></td>
       </tr>
     }else{
-      return props.data.envelopes.map((listValue, index)=>{
+      return data.envelopes.map((listValue, index)=>{
         if(listValue.status === "voided") return null
         return (
           <tr key={index}>
@@ -58,7 +61,16 @@ const SuratKeluarTable = (props) =>{
     )
   }
 
-  const createHapusButton = (envelopeId) =>{
+  const removeData = (value) =>{
+    setData((prevState)=>{
+      return {
+        ...prevState,
+        envelopes : prevState.envelopes.filter((el) => el.envelopeId !== value)
+      }
+    })
+  }
+
+  const createHapusButton = (envelopeId, index) =>{
     return (
       <Button
         kind={"danger"}
@@ -191,6 +203,8 @@ const SuratKeluarTable = (props) =>{
       let response =  await axios.post(url, data, {
 
       })
+      removeData(envelope_id)
+
       console.log(response)
     }catch(err){
       console.log(err)
