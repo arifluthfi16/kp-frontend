@@ -1,4 +1,4 @@
-import React, {useContext, useState} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import "./table-content.css";
 import { Button } from 'bima-design';
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
@@ -7,15 +7,16 @@ import axios from "axios";
 import {DocusignLoginContext} from "../../../contexts/DocusignLoginContext";
 import {Link} from "react-router-dom";
 import download from "downloadjs";
-
+import Swal from 'sweetalert2'
 
 const SuratKeluarTable = (props) =>{
   const {docuContext} = useContext(DocusignLoginContext);
   const [data, setData] = useState(props.data)
+  useEffect(()=>{
+    setData(props.data)
+  }, [props.data])
 
   const conditionallyPrintTable = () =>{
-    console.log(data);
-
     if(!data || !data.envelopes){
       return <tr>
         <td colSpan={5}><h3>Too bad it's empty</h3></td>
@@ -27,13 +28,20 @@ const SuratKeluarTable = (props) =>{
           <tr key={index}>
             <td>{listValue.emailSubject}</td>
             <td>{dateParser(listValue.sentDateTime)}</td>
-            <td>{(listValue.recipients.signers.length === 0 ? listValue.recipients.carbonCopies[0].name : listValue.recipients.signers[0].name)}</td>
+            {/*<td>{(listValue.recipients.signers.length === 0 ? listValue.recipients.carbonCopies[0].name : listValue.recipients.signers[0].name)}</td>*/}
+            <td>{recipientParser(listValue.recipients)}</td>
             <td>{statusTranslator(listValue.status)}</td>
             <td>{conditionallyPrintButton({status : listValue.status, envelope_id : listValue.envelopeId})}</td>
           </tr>
         )
       })
     }
+  }
+
+  const recipientParser = (recipientList) => {
+    return recipientList.signers.map((el, index)=> (
+        <p>{`${index+1} - ${el.name}`}</p>
+      ))
   }
 
   const createDisposisiButton = (envelopeId, disableStatus=false) =>{
@@ -84,7 +92,7 @@ const SuratKeluarTable = (props) =>{
 
 
   const timeConverter = (UNIX_timestamp) => {
-    let a = new Date(UNIX_timestamp * 1000);
+    let a = new Date(UNIX_timestamp);
     let months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
     let year = a.getFullYear();
     let month = months[a.getMonth()];
@@ -92,7 +100,7 @@ const SuratKeluarTable = (props) =>{
     let hour = a.getHours();
     let min = a.getMinutes();
     let sec = a.getSeconds();
-    let time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec ;
+    let time = `${date} ${month} ${year}`;
     return time;
   }
 
@@ -111,7 +119,7 @@ const SuratKeluarTable = (props) =>{
     try{
       let response =  await axios({url, method : "post", data, responseType: 'blob'});
       console.log(response)
-      await download(response.data, `${"Surat"} - ${timeConverter(Date.now())}.zip`);
+      await download(response.data, `${"Surat Keluar"} - ${timeConverter(Date.now())}.zip`);
     }catch(error){
       console.log(error)
     }
@@ -191,8 +199,6 @@ const SuratKeluarTable = (props) =>{
   const handleHapusSurat = async (envelope_id) =>{
     const url = `http://localhost:3001/api/surat/hapus-surat`
 
-    console.log(docuContext.auth)
-
     let data = {
       account_id : docuContext.profile.accounts[0].account_id,
       envelope_id,
@@ -200,14 +206,42 @@ const SuratKeluarTable = (props) =>{
     }
 
     try{
-      let response =  await axios.post(url, data, {
+      await Swal.fire({
+        title: 'Apakah anda yakin untuk menghapus surat?',
+        text: "Action ini tidak bisa dikembalikkan, penghapusan bersifat permanen",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Hapus',
+        cancelButtonText: 'Batal',
+        reverseButtons: true
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          let response =  await axios.post(url, data, {})
+          removeData(envelope_id)
 
+          Swal.fire(
+            'Berhasil Dihapus',
+            'Surat Berhasil Dihapus',
+            'success'
+          )
+        } else if (
+          /* Read more about handling dismissals below */
+          result.dismiss === Swal.DismissReason.cancel
+        ) {
+          Swal.fire(
+            'Batal',
+            'Penghapusan Surat Dibatalkan',
+            'error'
+          )
+        }
       })
-      removeData(envelope_id)
-
-      console.log(response)
     }catch(err){
       console.log(err)
+      Swal.fire(
+        'Gagal',
+        'Terjadi Kesalahan',
+        'error'
+      )
     }
   }
 

@@ -10,6 +10,7 @@ import {LoginContext} from "../../../contexts/LoginContext";
 import axios from "axios"
 import { useHistory } from "react-router-dom";
 import Select from "react-select";
+import Swal from "sweetalert2";
 
 const CreateDisposisi = (props) =>{
   const history = useHistory();
@@ -207,40 +208,65 @@ const CreateDisposisi = (props) =>{
         emptyFlag = true;
       }
     })
+
+    if(perihal === "") emptyFlag = true
+
     return emptyFlag
   }
 
   const handleSubmit = async (e) =>{
     e.preventDefault();
     if(await checkForEmpty()){
-      alert("ADA DATA KOSONG")
+      Swal.fire({
+        icon: 'error',
+        title: 'Ada Data Kosong!',
+        text: 'Mohon cek kembali input data anda!',
+      })
     }else{
       // IF ALL PASSES
       const url = "http://localhost:3001/api/surat/create-disposisi";
-
       const config = {
         headers: {
           'content-type': 'application/json'
         }
       }
 
-      console.log("ALL PASSES")
-      const data = {
-        envelopeId,
-        access_token : docuContext.auth.access_token,
-        accountId : docuContext.profile.accounts[0].account_id,
-        userId : user.id,
-        recipientData : formSurat,
-        perihal
-      }
-      const res = await axios.post(url, data, config);
+      await Swal.fire({
+        title: 'Submit pembuatan disposisi?',
+        showCancelButton: true,
+        confirmButtonText: 'Submit',
+        showLoaderOnConfirm: true,
+        preConfirm: async () => {
+          const data = {
+            envelopeId,
+            access_token : docuContext.auth.access_token,
+            accountId : docuContext.profile.accounts[0].account_id,
+            userId : user.id,
+            recipientData : formSurat,
+            perihal
+          }
 
-      if(res.status === 200){
-        // props.history.push('/surat-masuk');
-        console.log("Response : 200")
-      }else{
-        console.log(res.data.err)
-      }
+          const res = await axios.post(url, data, config);
+          if(res.status === 200){
+            Swal.fire({
+              icon: 'success',
+              title: 'Disposisi Berhasil Dibuat, mengalihkan halaman . . .',
+              showConfirmButton: false,
+              timer: 1500
+            }).then((results)=>{
+              props.history.goBack();
+            })
+          }else{
+            console.log(res.data.err)
+            Swal.fire({
+              icon: 'error',
+              title: 'Gagal membuat Disposisi!',
+              text: 'Terjadi error.',
+            })
+          }
+        },
+        allowOutsideClick: () => !Swal.isLoading()
+      })
     }
 
   }

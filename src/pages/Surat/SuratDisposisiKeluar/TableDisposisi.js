@@ -1,4 +1,5 @@
 import React, {useContext} from "react";
+import { useHistory } from 'react-router-dom';
 import "./table-content.css";
 import {Button} from 'bima-design';
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
@@ -8,19 +9,22 @@ import {Link} from "react-router-dom";
 import {DocusignLoginContext} from "../../../contexts/DocusignLoginContext";
 import download from "downloadjs"
 import {LoginContext} from "../../../contexts/LoginContext";
+import Swal from 'sweetalert2'
 
 const TableDisposisi = (props) =>{
   const {docuContext} = useContext(DocusignLoginContext);
   const {user} = useContext(LoginContext)
+  let history = useHistory();
 
   const conditionallyPrintTable = () =>{
-    if(!props.data){
+    const data = props.data;
+
+    if(!data){
       return <tr>
         <td colSpan={5}><h3>Too bad it's empty</h3></td>
       </tr>
     }else{
-      console.log(props.data)
-      return props.data.map((listValue, index)=>{
+      return data.map((listValue, index)=>{
         return (
           <tr
             key={index}
@@ -29,9 +33,9 @@ const TableDisposisi = (props) =>{
             }}
           >
             <td>{listValue.perihal}</td>
-            <td>{listValue.isi_note}</td>
+            <td>{listValue.nama_penerima}</td>
+            <td>{listValue.email_penerima}</td>
             <td>{dateParser(listValue.tanggal_dibuat)}</td>
-            <td>{listValue.nama_pengirim}</td>
             <td>{conditionallyPrintButton(listValue)}</td>
           </tr>
         )
@@ -122,12 +126,27 @@ const TableDisposisi = (props) =>{
     )
   }
 
+  const createDeleteButton = (id_disposisi) => {
+    return (
+      <Button
+        kind={"danger"}
+        className="mr-2"
+        size={"small"}
+        icon={<FontAwesomeIcon icon={faTrash}/>}
+        onClick={async ()=>{
+          await handleHapusButton({id_disposisi})
+        }}
+      >Delete</Button>
+    )
+  }
+
   const conditionallyPrintButton = (envelopeData) =>{
-    let {id_disposisi} = envelopeData
-    console.log("ID DISPOSISI : ",id_disposisi)
+    let {id} = envelopeData
+    console.log("ID DISPOSISI : ",id)
 
     return (<div className="row justify-space-between" style={{margin: "0px 16px"}}>
-      {createDownloadButton(id_disposisi)}
+      {createDownloadButton(id)}
+      {createDeleteButton(id)}
       {/*{createDetailButton(id_disposisi)}*/}
       {/*<Button*/}
       {/*  kind={"danger"}*/}
@@ -158,14 +177,60 @@ const TableDisposisi = (props) =>{
     }
   }
 
+  const handleHapusButton = async (payload) => {
+    console.log("Handling Hapus for Disposisi with id: ", payload)
+
+    let url = "http://localhost:3001/api/surat/hapus-disposisi";
+
+    let data = {
+      id_disposisi : payload.id_disposisi,
+      ini_payload : "ini payload"
+    }
+
+    try{
+
+      await Swal.fire({
+        title: 'Hapus Disposisi?',
+        text: "Disposisi yang hapus tidak dapat dikembalikan!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Hapus',
+        cancelButtonText: 'Batal',
+        reverseButtons: true
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          let response =  await axios({url, method : "post", data, responseType: 'blob'});
+          Swal.fire(
+            'Berhasil Dihapus',
+            'Disposisi Berhasil Dihapus',
+            'success'
+          ).then(()=>{
+            window.location.reload();
+          })
+        } else if (
+          /* Read more about handling dismissals below */
+          result.dismiss === Swal.DismissReason.cancel
+        ) {
+          Swal.fire(
+            'Cancelled',
+            'Your imaginary file is safe :)',
+            'error'
+          )
+        }
+      })
+    }catch(error){
+      console.log(error)
+    }
+  }
+
   return  (
     <table className={"table-content"} width={"100%"}>
       <thead>
       <tr>
         <th width="20%">Perihal</th>
-        <th width="20%">Catatan</th>
+        <th width="20%">Nama Penerima</th>
+        <th width="20%">Email Penerima</th>
         <th width="25%">Tanggal Dikirim</th>
-        <th width="20%">Pengirim</th>
         <th width="15%">Aksi</th>
       </tr>
       </thead>

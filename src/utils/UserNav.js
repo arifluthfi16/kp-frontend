@@ -1,4 +1,11 @@
-import {faEnvelope, faPlusSquare, faInbox, faPaperPlane, faFileWord} from "@fortawesome/free-solid-svg-icons";
+import {
+  faEnvelope,
+  faPlusSquare,
+  faInbox,
+  faPaperPlane,
+  faFileWord,
+  faArchive
+} from "@fortawesome/free-solid-svg-icons";
 import React from "react"
 
 const userNav = [
@@ -13,20 +20,36 @@ const userNav = [
     label : "Surat Masuk"
   },
   {
-    path : "/surat-Keluar",
+    path : "/surat-keluar",
     icon : faPaperPlane,
     label : "Surat Keluar"
   },
+  // {
+  //   path : "/arsip-surat",
+  //   icon : faArchive,
+  //   label : "Arsip Surat"
+  // },
   {
     path : "/surat-disposisi-masuk",
     icon : faInbox,
     label : "Surat Disposisi Masuk"
   },
   {
+    path : "/surat-disposisi-keluar",
+    icon : faPaperPlane,
+    label : "Surat Disposisi Keluar"
+  },
+  // {
+  //   path : "/arsip-disposisi",
+  //   icon : faArchive,
+  //   label : "Arsip Disposisi"
+  // },
+  {
     path : "/docusign-profile",
-    icon : faPlusSquare,
+    icon : faPaperPlane,
     label : (<>Profile Docusign <strong style={{color:"yellow"}}>[DEV]</strong></>)
   },
+
 ]
 
 export default userNav;

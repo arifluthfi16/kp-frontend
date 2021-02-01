@@ -1,50 +1,56 @@
 import React, {useContext, useEffect, useState} from 'react';
-import "./surat-keluar-page.css";
+import "./surat-disposisi-masuk-page.css";
 import SideNav from "../../../components/SideNav/SideNav";
 import Content from "../../../components/Content/Content";
 import {Tab, TabList, TabPanel, Tabs} from "react-tabs";
 import {Button, Input} from "bima-design";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faPlusSquare, faSearch} from "@fortawesome/free-solid-svg-icons";
-import TableContent from "../../../components/TableContent/TableContent";
-import SuratKeluarTable from "./SuratKeluarTable";
+import {faInfo, faPlusSquare, faSearch, faTrash} from "@fortawesome/free-solid-svg-icons";
+import TableDisposisi from "./TableDisposisi";
 import {DocusignLoginContext} from "../../../contexts/DocusignLoginContext";
-import axios from "axios";
+import axios from "axios"
+import { css } from "@emotion/core";
 import RotateLoader from "react-spinners/RotateLoader";
+import {LoginContext} from "../../../contexts/LoginContext";
 import Select from "react-select";
 
-const SuratKeluarPage = () =>{
+const SuratDisposisiKeluar = (props) =>{
   const {docuContext} = useContext(DocusignLoginContext);
-  const [dataSurat, setDataSurat] = useState({
+  const {user} = useContext(LoginContext);
+  const [searchComponent, setSearchComponent] = useState("");
+  const [dataDisposisi, setDataDisposisi] = useState({
     data : null,
-    isFetching : true
+    isFetching : true,
   });
   const [searchTerm, setSearchTerm] = useState("");
-  const [searchComponent, setSearchComponent] = useState("");
-  const [searchResults, setSearchResults] = useState({data : null});
+  const [searchResults, setSearchResults] = useState({
+    data : null
+  });
 
-  const handleSearchChange = (event) =>{
-    setSearchTerm(event.target.value)
-  }
+  console.log(dataDisposisi.data)
 
   const setFetch = (newStatus) =>{
-    setDataSurat(prevState => ({
+    setDataDisposisi(prevState => ({
         ...prevState,
         isFetching: newStatus
       })
-    )}
+  )}
 
   useEffect(()=>{
     if(docuContext.login && docuContext.profile.accounts){
       fetchDataSurat();
     }
+
+    return (()=>{
+      console.log("UNMOUNTED")
+    })
   }, [docuContext.login]);
 
   useEffect(()=>{
-    if(dataSurat.data) {
-      const filteredData = dataSurat.data.envelopes.filter(item => {
+    if(dataDisposisi.data) {
+      const filteredData = dataDisposisi.data.filter(item => {
 
-        let mappedComponent = ['perihal','recipient','tanggal']
+        let mappedComponent = ['perihal','nama','email', 'tanggal']
 
         if(searchComponent && searchComponent.length > 0){
           mappedComponent = searchComponent.map((el)=> el.value)
@@ -52,30 +58,33 @@ const SuratKeluarPage = () =>{
 
         let flags = {
           perihal : false,
-          recipient : false,
+          nama : false,
+          email : false,
           tanggal :false
         }
 
         if (!searchComponent || searchComponent.length === 0) {
           // console.log("Search component is null, search by all element")
-          flags.perihal = item.emailSubject.toLowerCase().includes(searchTerm.toLowerCase())
-          flags.recipient = checkRecipient(item.recipients, searchTerm)
-          flags.tanggal = dateParser(item.sentDateTime).toLowerCase().includes(searchTerm.toLowerCase())
+          flags.perihal = item.perihal.toLowerCase().includes(searchTerm.toLowerCase())
+          flags.tanggal = dateParser(item.tanggal_dibuat).toLowerCase().includes(searchTerm.toLowerCase())
+          flags.nama = item.nama_penerima.toLowerCase().includes(searchTerm.toLowerCase())
+          flags.email = item.email_penerima.toLowerCase().includes(searchTerm.toLowerCase())
         }else {
           // Map Search component
           if(mappedComponent.includes("perihal")){
-            flags.perihal = item.emailSubject.toLowerCase().includes(searchTerm.toLowerCase())
-            // console.log(`${item.emailSubject.toLowerCase()} === ${searchTerm.toLowerCase()} => ${flags.perihal}`)
+            flags.perihal = item.perihal.toLowerCase().includes(searchTerm.toLowerCase())
           }
 
-          if(mappedComponent.includes("recipient")){
-            console.log("Recipient")
-            flags.recipient = checkRecipient(item.recipients, searchTerm)
+          if(mappedComponent.includes("nama")){
+            flags.nama = item.nama_penerima.toLowerCase().includes(searchTerm.toLowerCase())
+          }
+
+          if(mappedComponent.includes("email")){
+            flags.email = item.email_penerima.toLowerCase().includes(searchTerm.toLowerCase())
           }
 
           if(mappedComponent.includes("tanggal")){
-            console.log("Recipient")
-            flags.tanggal = dateParser(item.sentDateTime).toLowerCase().includes(searchTerm.toLowerCase())
+            flags.tanggal = dateParser(item.tanggal_dibuat).toLowerCase().includes(searchTerm.toLowerCase())
           }
         }
 
@@ -88,34 +97,14 @@ const SuratKeluarPage = () =>{
           }
         }
 
-        // console.log(`Eval String : ${evalString} ===> ${eval(evalString)}`)
-        // console.log(`Final Eval String : ${evalString} => ${eval(evalString)}`)
         return eval(evalString)
       })
 
       setSearchResults({
-          data : {
-            ...dataSurat.data,
-            envelopes : filteredData
-          }
+        data : filteredData
       })
     }
   }, [searchTerm, searchComponent])
-
-  const checkRecipient = (recipientList, searchTerm) => {
-    let flag = false
-    if(searchTerm === "" || !searchTerm) return false
-    else{
-      let map = recipientList.signers.map((el, index)=> el.name.toLowerCase())
-      map.forEach((el)=>{
-        console.log(`${el} => ${searchTerm.toLowerCase()}`)
-        if(el.includes(searchTerm.toLowerCase())){
-          flag =  true
-        }
-      })
-    }
-    return flag
-  }
 
   const dateParser = (dateInput) =>{
     if(!dateInput) return "-"
@@ -158,24 +147,30 @@ const SuratKeluarPage = () =>{
     return `${hari}, ${tanggal} ${bulan} ${tahun}. ${jam}:${menit}`
   }
 
+  const handleSearchChange = (event) =>{
+    setSearchTerm(event.target.value)
+  }
+
   const fetchDataSurat = async () =>{
     if(!docuContext.profile.accounts[0].account_id) return;
-
-    let url = "http://localhost:3001/api/surat/keluar";
+    console.log("Fetching data disposisi")
+    let url = "http://localhost:3001/api/surat/get-disposisi-keluar";
     let data = {
-      access_token : docuContext.auth.access_token,
-      account_id : docuContext.profile.accounts[0].account_id
+      userId : user.id
     }
 
     try{
       setFetch(true);
       let response =  await axios({url, method : "post", data});
-      setDataSurat({
-        data: response.data,
-        isFetching: false
+      console.log(response.data.data)
+      setDataDisposisi({
+        data: response.data.data,
+        isFetching: false,
       })
+
     }catch(error){
-      setDataSurat({
+      console.log(error)
+      setDataDisposisi({
         data: null,
         isFetching: false
       })
@@ -183,7 +178,7 @@ const SuratKeluarPage = () =>{
   }
 
   const conditionallyPrintTable = () =>{
-    if(dataSurat.isFetching && !dataSurat.data){
+    if(dataDisposisi.isFetching && !dataDisposisi.data){
       return (
         <div className={"loading-spinner-container"}>
           <RotateLoader
@@ -195,9 +190,9 @@ const SuratKeluarPage = () =>{
       )
     }else{
       if(searchTerm === ""){
-        return <SuratKeluarTable data={dataSurat.data}/>
+        return <TableDisposisi data={dataDisposisi.data}/>
       }else{
-        return <SuratKeluarTable data={searchResults.data}/>
+        return <TableDisposisi data={searchResults.data}/>
       }
     }
   }
@@ -206,20 +201,17 @@ const SuratKeluarPage = () =>{
     <div className={"dashboard-container"}>
         <SideNav/>
       <Content
-        header_title={"Surat Keluar"}
+        header_title = {"Surat Disposisi Keluar"}
         crumbList = {[{
-          name : "Surat Keluar",
-          link : "/surat-keluar"
+          name : "Surat Disposisi Keluar",
+          link : "/surat-disposisi-keluar"
         }]}
       >
         <Tabs>
           <TabList>
             <Tab>
-              <div className="react-tabs-title-name">Surat Terkirim</div>
+              <div className="react-tabs-title-name">Surat Disposisi Keluar</div>
             </Tab>
-            {/*<Tab>*/}
-            {/*  <div className="react-tabs-title-name">Sudah Dibaca</div>*/}
-            {/*</Tab>*/}
           </TabList>
           <div className="ml-3 mr-3 pb-3 pt-1 mt-2 mb-2">
             <TabPanel>
@@ -232,6 +224,7 @@ const SuratKeluarPage = () =>{
                     value={searchTerm}
                     onChange={handleSearchChange}
                   />
+
                   <div
                     className={"ml-1"}
                     style={{minWidth : "200px"}}
@@ -244,7 +237,8 @@ const SuratKeluarPage = () =>{
                       placeholder={'Cari Berdasarkan'}
                       options={[
                         { value: 'perihal', label: 'Perihal' },
-                        { value: 'recipient', label: 'Penerima' },
+                        { value: 'nama', label: 'Nama Penerima' },
+                        { value: 'email', label: 'Email Penerima' },
                         { value: 'tanggal', label: 'Tanggal' }
                       ]}
                       styles={{
@@ -280,4 +274,4 @@ const SuratKeluarPage = () =>{
   )
 }
 
-export default SuratKeluarPage;
+export default SuratDisposisiKeluar;

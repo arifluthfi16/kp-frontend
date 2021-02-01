@@ -27,6 +27,7 @@ const TableSuratMasuk = (props) =>{
       return props.data.envelopes.map((listValue, index)=>{
         if(listValue.status === "voided") return null
 
+        let thisDataSigned = listValue.recipients.signers.filter((el)=> el.email === docuContext.profile.email && el.status === "completed").map((el) => el.status)
         return (
           <tr
             key={index}
@@ -35,8 +36,8 @@ const TableSuratMasuk = (props) =>{
             <td>{listValue.emailSubject}</td>
             <td>{dateParser(listValue.sentDateTime)}</td>
             <td>{listValue.sender.userName}</td>
-            <td>{statusTranslator(listValue.status)}</td>
-            <td>{conditionallyPrintButton(listValue)}</td>
+            <td>{statusTranslator(listValue.status, thisDataSigned.length)}</td>
+            <td>{conditionallyPrintButton(listValue, thisDataSigned.length)}</td>
           </tr>
         )
       })
@@ -84,12 +85,14 @@ const TableSuratMasuk = (props) =>{
     return `${hari}, ${tanggal} ${bulan} ${tahun}. ${jam}:${menit}`
   }
 
-  const statusTranslator = (status) =>{
+  const statusTranslator = (status, signedByUser = false) =>{
+    if(signedByUser && status !== "completed") return "Anda Sudah Tanda tangan"
+
     switch (status) {
-      case "completed" :
-        return "Sudah Ditandatangan"
       case "sent" :
         return "Perlu Tanda Tangan"
+      case "completed" :
+        return "Proses Tanda Tangan Selesai"
       case "created" :
         return "Draft"
       case "delivered":
@@ -99,7 +102,7 @@ const TableSuratMasuk = (props) =>{
     }
   }
 
-  const createDisposisiButton = (envelopeId) =>{
+  const createDisposisiButton = (envelopeId, isDisabled = false) =>{
     return (
         <Link
           to={`/buat-disposisi/${envelopeId}`}
@@ -109,6 +112,7 @@ const TableSuratMasuk = (props) =>{
           }}
         >
           <Button
+            disabled={isDisabled}
             className="mr-2"
             size={"small"}
             icon={<FontAwesomeIcon icon={faInfo}/>}
@@ -137,9 +141,10 @@ const TableSuratMasuk = (props) =>{
   //   )
   // }
 
-  const createDownloadButton = (envelopeId) =>{
+  const createDownloadButton = (envelopeId, isDisabled = false) =>{
     return (
       <Button
+        disabled={isDisabled}
         className="mr-2"
         size={"small"}
         icon={<FontAwesomeIcon icon={faDownload}/>}
@@ -221,8 +226,10 @@ const TableSuratMasuk = (props) =>{
     }
   }
 
-  const conditionallyPrintButton = (envelopeData) =>{
+  const conditionallyPrintButton = (envelopeData, isSigned = false) =>{
     let {envelopeId, status} = envelopeData
+
+    if(isSigned && status !== "completed") status = "personally_completed";
 
     switch (status) {
       case "completed" :
@@ -248,9 +255,29 @@ const TableSuratMasuk = (props) =>{
             {createDisposisiButton(envelopeId)}
           </div>
         )
+      case "personally_completed":
+        return (
+          <div className="row justify-space-between" style={{margin: "0px 16px"}}>
+            {createDownloadButton(envelopeId, true)}
+            {createDisposisiButton(envelopeId, true)}
+          </div>
+        )
       default:
         return status
     }
+  }
+
+  const timeConverter = (UNIX_timestamp) => {
+    let a = new Date(UNIX_timestamp);
+    let months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    let year = a.getFullYear();
+    let month = months[a.getMonth()];
+    let date = a.getDate();
+    let hour = a.getHours();
+    let min = a.getMinutes();
+    let sec = a.getSeconds();
+    let time = `${date} ${month} ${year}`;
+    return time;
   }
 
   const handleDownloadButton = async (payload) =>{
@@ -268,7 +295,7 @@ const TableSuratMasuk = (props) =>{
     try{
       let response =  await axios({url, method : "post", data, responseType: 'blob'});
       console.log(response)
-      await download(response.data, 'test.zip');
+      await download(response.data, `${"Surat Masuk"} - ${timeConverter(Date.now())}.zip`);
     }catch(error){
       console.log(error)
     }
@@ -280,7 +307,7 @@ const TableSuratMasuk = (props) =>{
       <tr>
         <th width="30%">Perihal</th>
         <th width="25%">Tanggal Dikirim</th>
-        <th width="20%">Pengirim</th>
+        <th width="20%">Nama Pengirim</th>
         <th width="10%">Status Terakhir</th>
         <th width="15%">Aksi</th>
       </tr>

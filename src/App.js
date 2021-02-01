@@ -28,6 +28,7 @@ import { createBrowserHistory } from "history";
 import {LoginContext} from "./contexts/LoginContext";
 import {DocusignLoginContext} from "./contexts/DocusignLoginContext";
 import SuratDisposisiMasuk from "./pages/Surat/SuratDisposisiMasuk/SuratDisposisiMasuk";
+import SuratDisposisiKeluar from "./pages/Surat/SuratDisposisiKeluar/SuratDisposisiKeluar";
 import CreateDisposisi from "./pages/Surat/CreateDisposisi/CreateDisposisi";
 
 const App = () => {
@@ -60,6 +61,7 @@ const App = () => {
           <ProtectedRoute exact path={"/docusign-profile"} component={DocusignProfilePage}/>
           <ProtectedRoute exact path={"/buat-surat/upload-surat"} component={UploadFileSuratPage}/>
           <ProtectedRoute exact path={"/surat-disposisi-masuk"} component={SuratDisposisiMasuk}/>
+          <ProtectedRoute exact path={"/surat-disposisi-keluar"} component={SuratDisposisiKeluar}/>
           <ProtectedRoute path={"/detail-surat/"} component={DetailSuratPage}/>
           <AdminRoute exact path="/admin" component={AdminDashboardPage}/>
         </Switch>

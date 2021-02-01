@@ -11,10 +11,10 @@ import { useHistory } from "react-router-dom";
 import Select from 'react-select';
 import UploadFileButton from "./UploadFileButton";
 import {LoginContext} from "../../../contexts/LoginContext";
+import Swal from 'sweetalert2'
 
 const UploadFileSuratPage = () =>{
   const history = useHistory();
-
   const {docuContext} = useContext(DocusignLoginContext);
   const {user, login} = useContext(LoginContext)
   const [file, setFile] = useState([]);
@@ -50,7 +50,7 @@ const UploadFileSuratPage = () =>{
 
   const options = [
     { value: 'signer', label: 'Signer' },
-    { value: 'cc', label: 'Carbon Copy' },
+    // { value: 'cc', label: 'Carbon Copy' },
   ];
 
   const renderFormsurat = () =>{
@@ -247,10 +247,13 @@ const UploadFileSuratPage = () =>{
   const checkForEmpty = async () =>{
     let emptyFlag = false;
     formSurat.forEach(element => {
-      if(!element.email || !element.recipient_type){
+      if(!element.email || !element.note){
         emptyFlag = true;
       }
     })
+
+    if(perihal === "") emptyFlag = true
+
     return emptyFlag
   }
 
@@ -265,17 +268,41 @@ const UploadFileSuratPage = () =>{
     }
 
     if(await checkForEmpty()){
-      alert("ADA DATA KOSONG")
+      Swal.fire({
+        icon: 'error',
+        title: 'Ada Data Kosong!',
+        text: 'Mohon cek kembali input data anda!',
+      })
     }else{
       // IF ALL PASSES
       const data = await fabricateFormData();
-      const res = await axios.post(url, data, config);
-      console.log(res.data);
-      if(res.data.url){
-        window.location.replace(`${res.data.url}`)
-      }else{
-        alert(res.data.error)
-      }
+      await Swal.fire({
+        title: 'Submit pembuatan surat?',
+        showCancelButton: true,
+        confirmButtonText: 'Submit',
+        showLoaderOnConfirm: true,
+        preConfirm: async () => {
+          const res = await axios.post(url, data, config);
+          if(res.data.url){
+            Swal.fire({
+              icon: 'success',
+              title: 'Surat Berhasil Dibuat, mengalihkan halaman . . .',
+              showConfirmButton: false,
+              timer: 1500
+            }).then((results)=>{
+              window.location.replace(`${res.data.url}`)
+            })
+          }else{
+            console.log(res.data.error)
+            Swal.fire({
+              icon: 'error',
+              title: 'Gagal Upload Surat!',
+              text: 'Ada kendala di server',
+            })
+          }
+        },
+        allowOutsideClick: () => !Swal.isLoading()
+      })
     }
 
   }
