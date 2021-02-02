@@ -16,7 +16,7 @@ const TableDisposisi = (props) =>{
   const conditionallyPrintTable = () =>{
     if(!props.data){
       return <tr>
-        <td colSpan={5}><h3>Too bad it's empty</h3></td>
+        <td colSpan={5}><h4>Daftar Disposisi kosong, belum ada Disposisi Masuk</h4></td>
       </tr>
     }else{
       console.log(props.data)

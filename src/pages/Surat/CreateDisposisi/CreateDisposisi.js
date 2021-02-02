@@ -4,7 +4,7 @@ import SideNav from "../../../components/SideNav/SideNav";
 import Content from "../../../components/Content/Content";
 import {Input, Button} from "bima-design";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faPlusSquare,faPlus, faUpload, faFileUpload, faArrowLeft} from "@fortawesome/free-solid-svg-icons";
+import {faPlusSquare,faPlus, faUpload, faFileUpload, faArrowLeft, faFilePdf} from "@fortawesome/free-solid-svg-icons";
 import {DocusignLoginContext} from "../../../contexts/DocusignLoginContext";
 import {LoginContext} from "../../../contexts/LoginContext";
 import axios from "axios"
@@ -20,6 +20,7 @@ const CreateDisposisi = (props) =>{
   const [formSurat, setFormSurat] = useState([
     {email : "", note : ""}
   ])
+  const [document, setDocument] = useState([])
 
   const [contactList, setContactList] = useState({
     contact : [],
@@ -48,6 +49,26 @@ const CreateDisposisi = (props) =>{
     }
   }, [contactList.isLoaded, login])
 
+  useEffect(()=>{
+    if(docuContext.login){
+      getDetailDokumen()
+    }
+  }, [docuContext.login])
+
+  const getDetailDokumen = async () =>{
+    try{
+      let request = await axios.post(`http://localhost:3001/api/surat/get-detail-dokumen-surat`, {
+        access_token : docuContext.auth.access_token,
+        account_id : docuContext.profile.accounts[0].account_id,
+        envelope_id: envelopeId,
+      });
+
+      setDocument(request.data.envelopeDocuments.filter((el)=>el.documentId !== "certificate"))
+    }catch(err){
+      console.log(err)
+    }
+  }
+
   const getContactList = async (userId) => {
     try{
       console.log("Getting Contact List")
@@ -63,6 +84,17 @@ const CreateDisposisi = (props) =>{
     }catch(error){
       console.log(error)
     }
+  }
+
+  const printDocumentList = () =>{
+    return document.map((el) => {
+      return (
+        <tr>
+          <td width={"10%"}><FontAwesomeIcon icon={faFilePdf} size="lg"/></td>
+          <td>{el.name}</td>
+        </tr>
+      )
+    })
   }
 
   const getSelectedValueLabel = (index, name) =>{
@@ -214,6 +246,26 @@ const CreateDisposisi = (props) =>{
     return emptyFlag
   }
 
+  const conditionallyPrintDocuments = () =>{
+    if(document.length > 0){
+      return (
+        <table>
+          <th>
+            <td colSpan={"2"}>
+              Daftar Dokumen
+            </td>
+          </th>
+          <tr></tr>
+          {printDocumentList()}
+        </table>
+      )
+    }else{
+      return (
+        "Tidak ada dokumen"
+      )
+    }
+  }
+
   const handleSubmit = async (e) =>{
     e.preventDefault();
     if(await checkForEmpty()){
@@ -232,9 +284,9 @@ const CreateDisposisi = (props) =>{
       }
 
       await Swal.fire({
-        title: 'Submit pembuatan disposisi?',
+        title: 'Kirim disposisi?',
         showCancelButton: true,
-        confirmButtonText: 'Submit',
+        confirmButtonText: 'Kirim',
         showLoaderOnConfirm: true,
         preConfirm: async () => {
           const data = {
@@ -302,6 +354,10 @@ const CreateDisposisi = (props) =>{
                   icon={(<FontAwesomeIcon icon={faPlus}/>)}
                   onClick={handleAddNew}
                 >Tambah Penerima</Button>
+              </div>
+
+              <div className={"mb-2"}>
+                {conditionallyPrintDocuments()}
               </div>
 
               <div className="perihal-wrapper mb-2">

@@ -21,7 +21,7 @@ const TableDisposisi = (props) =>{
 
     if(!data){
       return <tr>
-        <td colSpan={5}><h3>Too bad it's empty</h3></td>
+        <td colSpan={5}><h4>Daftar Disposisi kosong, belum ada Disposisi Keluar</h4></td>
       </tr>
     }else{
       return data.map((listValue, index)=>{

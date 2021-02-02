@@ -21,7 +21,7 @@ const TableSuratMasuk = (props) =>{
   const conditionallyPrintTable = () =>{
     if(!props.data || !props.data.envelopes){
       return <tr>
-        <td colSpan={5}><h3>Too bad it's empty</h3></td>
+        <td colSpan={5}><h4>Daftar Surat kosong, belum ada Surat Masuk</h4></td>
       </tr>
     }else{
       return props.data.envelopes.map((listValue, index)=>{

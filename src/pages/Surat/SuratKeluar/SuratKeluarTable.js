@@ -19,7 +19,7 @@ const SuratKeluarTable = (props) =>{
   const conditionallyPrintTable = () =>{
     if(!data || !data.envelopes){
       return <tr>
-        <td colSpan={5}><h3>Too bad it's empty</h3></td>
+        <td colSpan={5}><h4>Daftar Surat kosong, belum ada Surat Keluar</h4></td>
       </tr>
     }else{
       return data.envelopes.map((listValue, index)=>{
@@ -39,9 +39,24 @@ const SuratKeluarTable = (props) =>{
   }
 
   const recipientParser = (recipientList) => {
-    return recipientList.signers.map((el, index)=> (
-        <p>{`${index+1} - ${el.name}`}</p>
+    let cc, signers;
+    let combined = [];
+
+    if(recipientList.signers.length >0){
+      signers = recipientList.signers.map((el, index)=> (
+        <p>{`${el.name}`}</p>
       ))
+      combined = [...signers]
+    }
+
+    if(recipientList.carbonCopies.length >0){
+      cc = recipientList.carbonCopies.map((el, index)=> (
+        <p>{`${el.name}`}</p>
+      ))
+      combined = [...combined, ...cc]
+    }
+
+    return combined.map((el) => el)
   }
 
   const createDisposisiButton = (envelopeId, disableStatus=false) =>{
@@ -78,9 +93,10 @@ const SuratKeluarTable = (props) =>{
     })
   }
 
-  const createHapusButton = (envelopeId, index) =>{
+  const createHapusButton = (envelopeId, disableStatus=false) =>{
     return (
       <Button
+        disabled={disableStatus}e
         kind={"danger"}
         className="mr-2"
         size={"small"}
@@ -254,7 +270,7 @@ const SuratKeluarTable = (props) =>{
           <div className="row justify-space-between" style={{margin: "0px 16px"}}>
             {createDownloadButton(envelope_id)}
             {createDisposisiButton(envelope_id)}
-            {createHapusButton(envelope_id)}
+            {createHapusButton(envelope_id, true)}
           </div>
         )
       case "sent" :

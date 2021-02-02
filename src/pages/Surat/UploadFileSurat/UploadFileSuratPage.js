@@ -50,7 +50,7 @@ const UploadFileSuratPage = () =>{
 
   const options = [
     { value: 'signer', label: 'Signer' },
-    // { value: 'cc', label: 'Carbon Copy' },
+    { value: 'cc', label: 'Carbon Copy' },
   ];
 
   const renderFormsurat = () =>{
@@ -246,13 +246,17 @@ const UploadFileSuratPage = () =>{
 
   const checkForEmpty = async () =>{
     let emptyFlag = false;
+    console.log(formSurat)
     formSurat.forEach(element => {
-      if(!element.email || !element.note){
+      console.log(element)
+      if(!element.email || !element.recipient_type){
         emptyFlag = true;
       }
     })
 
-    if(perihal === "") emptyFlag = true
+    if(perihal === "") {
+      emptyFlag = true
+    }
 
     return emptyFlag
   }
