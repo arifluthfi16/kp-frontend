@@ -91,6 +91,40 @@ const UploadFileSuratPage = () =>{
               })}
             />
           </div>
+          <div className="form-item-wrapper mr-1">
+            <Select
+              value={{label : getSelectedValueLabel(index, "email")}}
+              name={"email"}
+              onChange={(e)=>handleValueChange(e,index, "email")}
+              options={parseContactList()}
+              styles={{
+                control: (base, state) => ({
+                  ...base,
+                  backgroundColor : "#F5F8FF",
+                  borderStyle: 'none',
+                  borderWidth: 0,
+                  '&:hover': {
+                    borderColor: 'none',
+                    backgroundColor : "#eff2f9"
+                  }, // border style on hover
+                  boxShadow: 'inset 0 -1px #748ba9', // no box-shadow
+                }),
+              }}
+              theme={theme => ({
+                ...theme,
+                borderRadius: 0,
+                colors: {
+                  ...theme.colors,
+                  primary25: '#F5F8FF',
+                  primary: '#748ba9',
+                },
+                spacing : {
+                  baseUnit : 4,
+                  controlHeight: 40,
+                }
+              })}
+            />
+          </div>
           <div className="form-item-wrapper ml-1">
             <Select
               value={{label : getSelectedValueLabel(index, "recipient_type")}}
@@ -128,7 +162,7 @@ const UploadFileSuratPage = () =>{
           {formSurat.length > 1 &&
               <Button
                 onClick={()=> handleDelete(index)}
-                style={{
+                style={{  
                   marginLeft: "16px"
                 }}
               >

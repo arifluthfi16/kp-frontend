@@ -6,10 +6,6 @@ import {Link} from "react-router-dom"
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 
 const BuatSuratPage = () =>{
-
-
-
-
   return (
     <div className={"dashboard-container"}>
       <SideNav/>

@@ -1,6 +1,5 @@
 import React, {useContext, useEffect, useState} from 'react';
 import "./login-page.css";
-// import Logo from "../../src/images/logo-unikom.png";
 import Logo from "../../images/logo-unikom.png";
 import {LoginContext} from "../../contexts/LoginContext";
 import {Button, Input} from "bima-design";
@@ -50,7 +49,6 @@ const LoginPage = (props) => {
     <div className={"container-login"}>
       <div className={"login-block"}>
         <div className="container-column">
-          {/*{login ? <h6>Already Loggedin</h6> : <h6 style={{color:"red"}}>Not Login</h6>}*/}
           <img src={Logo} className={"login-logo"} alt="Logo Unikom"/>
 
           <Input
@@ -73,10 +71,10 @@ const LoginPage = (props) => {
 
           {renderButton()}
 
-          <div className={["row", "justify-center"]} style={{margin: "8px 0px"}}>
-            <input type="checkbox"/>
-            <label htmlFor="" className={"ml-1"}>Remember Me?</label>
-          </div>
+          {/*<div className={["row", "justify-center"]} style={{margin: "8px 0px"}}>*/}
+          {/*  <input type="checkbox"/>*/}
+          {/*  <label htmlFor="" className={"ml-1"}>Remember Me?</label>*/}
+          {/*</div>*/}
 
           <hr  style={{
             color: '#243E5A',
@@ -89,6 +87,7 @@ const LoginPage = (props) => {
               className={"child login-page-item-size mt-2"}
               kind={"tertiary"}
               icon={<FontAwesomeIcon icon={faGoogle} />}
+              disabled
           >
             Login menggunakan Email UNIKOM
           </Button>

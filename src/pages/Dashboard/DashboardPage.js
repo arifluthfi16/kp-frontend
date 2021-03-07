@@ -3,7 +3,6 @@ import "./dashboard-page.css";
 import SideNav from "../../components/SideNav/SideNav";
 import Content from "../../components/Content/Content";
 
-
 const DashboardPage = () =>{
   return (
     <div className={"dashboard-container"}>
@@ -11,6 +10,7 @@ const DashboardPage = () =>{
       <Content
         header_title={"Dashboard"}
       >
+        Content dashboard
       </Content>
     </div>
   )

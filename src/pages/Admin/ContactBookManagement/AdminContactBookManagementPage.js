@@ -1,20 +1,20 @@
 import React from 'react';
-import "./dashboard-page.css";
+import "./contact-book-management-page.css";
 import SideNav from "../../../components/SideNav/SideNav";
 import Content from "../../../components/Content/Content";
 import {faEnvelope, faPlusSquare, faInbox, faPaperPlane, faFileWord} from "@fortawesome/free-solid-svg-icons";
 
-const AdminDashboardPage = () =>{
+const AdminContactBookManagementPage = () =>{
   return (
     <div className={"dashboard-container"}>
       <SideNav/>
       <Content
-        header_title={"Admin Dashboard"}
+        header_title={"Contact Book Management"}
       >
-        Admin Dashboard
+        Contact Book Management
       </Content>
     </div>
   )
 }
 
-export default AdminDashboardPage;
+export default AdminContactBookManagementPage;

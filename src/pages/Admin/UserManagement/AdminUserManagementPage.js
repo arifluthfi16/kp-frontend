@@ -1,20 +1,20 @@
 import React from 'react';
-import "./dashboard-page.css";
+import "./user-management-page.css";
 import SideNav from "../../../components/SideNav/SideNav";
 import Content from "../../../components/Content/Content";
 import {faEnvelope, faPlusSquare, faInbox, faPaperPlane, faFileWord} from "@fortawesome/free-solid-svg-icons";
 
-const AdminDashboardPage = () =>{
+const AdminUserManagementPage = () =>{
   return (
     <div className={"dashboard-container"}>
       <SideNav/>
       <Content
-        header_title={"Admin Dashboard"}
+        header_title={"User Management"}
       >
-        Admin Dashboard
+        User Management
       </Content>
     </div>
   )
 }
 
-export default AdminDashboardPage;
+export default AdminUserManagementPage;

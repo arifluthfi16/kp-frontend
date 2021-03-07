@@ -30,6 +30,9 @@ import {DocusignLoginContext} from "./contexts/DocusignLoginContext";
 import SuratDisposisiMasuk from "./pages/Surat/SuratDisposisiMasuk/SuratDisposisiMasuk";
 import SuratDisposisiKeluar from "./pages/Surat/SuratDisposisiKeluar/SuratDisposisiKeluar";
 import CreateDisposisi from "./pages/Surat/CreateDisposisi/CreateDisposisi";
+import AdminContactBookManagementPage from "./pages/Admin/ContactBookManagement/AdminContactBookManagementPage";
+import AdminUserManagementPage from "./pages/Admin/UserManagement/AdminUserManagementPage";
+import AdminRoleManagementPage from "./pages/Admin/RoleManagement/AdminRoleManagementPage";
 
 const App = () => {
   const {docuContext, checkDocuLogin} = useContext(DocusignLoginContext);
@@ -37,12 +40,10 @@ const App = () => {
 
   useEffect(()=>{
     checkDocuLogin();
-    // console.log(docuContext.login)
   }, [docuContext.login]);
 
   useEffect(()=>{
     checkLogin()
-    // console.log("Web Login Status : ", login)
   }, [login])
 
   const history = createBrowserHistory();
@@ -64,6 +65,9 @@ const App = () => {
           <ProtectedRoute exact path={"/surat-disposisi-keluar"} component={SuratDisposisiKeluar}/>
           <ProtectedRoute path={"/detail-surat/"} component={DetailSuratPage}/>
           <AdminRoute exact path="/admin" component={AdminDashboardPage}/>
+          <AdminRoute exact path={"/admin/manage-contact-book"} component={AdminContactBookManagementPage}/>
+          <AdminRoute exact path={"/admin/manage-user"} component={AdminUserManagementPage}/>
+          <AdminRoute exact path={"/admin/manage-roles"} component={AdminRoleManagementPage}/>
         </Switch>
       </Router>
     </div>
