@@ -10,31 +10,32 @@ import download from "downloadjs";
 import Swal from 'sweetalert2'
 import {faPlus} from "@fortawesome/free-solid-svg-icons/faPlus";
 
-const RoleGroupTable = (props) =>{
+const RoleTable = (props) =>{
   const conditionallyPrintTable = () =>{
-    if(!props.data || props.data.length <= 0){
+    if(!props.data){
+      return <tr>
+        <td colSpan={3}><h5>Grup Belum Dipilih</h5></td>
+      </tr>
+    }
+    if(props.data.length <= 0){
       return <tr>
         <td colSpan={3}><h5>Data Kosong</h5></td>
       </tr>
     }else{
       return <tbody className={"parent-table"}>
-        {
-          props.data.map((listValue, index)=>{
-            return (
-              <tr
-                key={index}
-                className={listValue.id === props.activeRow ? "active" : ""}
-                onClick={()=>{
-                  props.setActiveRow(listValue.id)
-                }}
-              >
-                <td>{listValue.group_name}</td>
-                <td>{listValue.jumlah_user_terdaftar}</td>
-                <td>{conditionallyPrintButton({id : listValue.id})}</td>
-              </tr>
-            )
-          })
-        }
+      {
+        props.data.map((listValue, index)=>{
+          return (
+            <tr
+              key={index}
+            >
+              <td>{listValue.name}</td>
+              <td>{listValue.jumlah_user_terdaftar}</td>
+              <td>{conditionallyPrintButton({id : listValue.id})}</td>
+            </tr>
+          )
+        })
+      }
       </tbody>
     }
   }
@@ -55,7 +56,7 @@ const RoleGroupTable = (props) =>{
         className="mr-2"
         size={"small"}
         icon={<FontAwesomeIcon icon={faTrash}/>}
-      ></Button>
+      />
     )
   }
 
@@ -65,7 +66,7 @@ const RoleGroupTable = (props) =>{
         kind={"primary"}
         size={"small"}
         icon={<FontAwesomeIcon icon={faPlus}/>}
-      ></Button>
+      />
     )
   }
 
@@ -75,7 +76,7 @@ const RoleGroupTable = (props) =>{
         kind={"primary"}
         size={"small"}
         icon={<FontAwesomeIcon icon={faEdit}/>}
-      ></Button>
+      />
     )
   }
 
@@ -91,4 +92,4 @@ const RoleGroupTable = (props) =>{
   )
 }
 
-export default RoleGroupTable;
+export default RoleTable;

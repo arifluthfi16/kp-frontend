@@ -23,7 +23,6 @@ const LoginContextProvider = (props) => {
     let user = JSON.parse(localStorage.getItem("auth"));
     if(user){
       // Need to verify if the token still valid
-      console.log(user)
       setLogin(true);
       setUser(user);
       setLoginError(null);
@@ -65,7 +64,6 @@ const LoginContextProvider = (props) => {
           setLogin(true);
           setUser(response.data);
           setLoginError(null);
-          console.log("login succeed");
           if(response.data.roles[0] === "user"){
             window.location.replace("/");
           }else if(response.data.roles[0] === "admin"){

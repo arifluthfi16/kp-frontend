@@ -18,7 +18,9 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import Select from "react-select";
 import {useHistory} from "react-router-dom";
 import RoleGroupTable from "./RoleGroupTable";
-
+import axios from "axios";
+import RoleTable from "./RoleTable";
+const BACKEND_BASE_PATH=process.env.REACT_APP_LOCAL_BACKEND_SERVER;
 
 const mockData = [
   {
@@ -41,20 +43,32 @@ const mockData = [
     group_name : "Rektorat",
     jumlah_user_terdaftar : "20"
   }
-]
+];
 
 const AdminRoleManagementPage = () =>{
   const [activeRoleGroupRow, setActiveRoleGroupRow] = useState(null);
   const [roleGroupData, setRoleGroupData] = useState([]);
   const [roleData, setRoleData] = useState(null);
 
-  useEffect(()=>{
-    setRoleGroupData(mockData)
-  }, [roleGroupData])
+  useEffect( ()=>{
+    fetchGroupData()
+  }, [])
 
   useEffect(()=>{
-    console.log("Fetching new role data by group id : ", activeRoleGroupRow)
+    fetchRoleData(activeRoleGroupRow)
   }, [activeRoleGroupRow])
+
+  const fetchGroupData = async () => {
+    const REQUEST_URL = `${BACKEND_BASE_PATH}/api/group`;
+    const result = await axios.get(REQUEST_URL)
+    setRoleGroupData(result.data.data)
+  }
+
+  const fetchRoleData = async (group_id) => {
+    const REQUEST_URL = `${BACKEND_BASE_PATH}/api/${group_id}/roles/`;
+    const result = await axios.get(REQUEST_URL)
+    setRoleData(result.data.data)
+  }
 
   const conditionallyPrintRoleGroupTable = () =>{
     return (
@@ -72,29 +86,9 @@ const AdminRoleManagementPage = () =>{
 
   const conditionallyPrintRoleTable = () =>{
     return (
-      <table className={"table-content"} width={"100%"}>
-        <tr>
-          <th width="25%">Nama Role</th>
-          <th width="25%">Jumlah User Terdaftar</th>
-          <th width="20%">Aksi</th>
-        </tr>
-        <tr>
-          <td>Rektorat</td>
-          <td>10</td>
-          <td>10</td>
-        </tr>
-        <tr>
-          <td>Rektorat</td>
-          <td>10</td>
-          <td>10</td>
-        </tr>
-        <tr>
-          <td>Rektorat</td>
-          <td>10</td>
-          <td>10</td>
-        </tr>
-        {/*{conditionallyPrintTable()}*/}
-      </table>
+      <RoleTable
+        data={roleData}
+      />
     )
   }
 

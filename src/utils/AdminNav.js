@@ -7,11 +7,11 @@ const adminNav = [
     icon : faUser,
     label : "Manage User"
   },
-  {
-    path : "/admin/manage-contact-book",
-    icon : faToolbox,
-    label : "Manage Contact book "
-  },
+  // {
+  //   path : "/admin/manage-contact-book",
+  //   icon : faToolbox,
+  //   label : "Manage Contact book "
+  // },
   {
     path : "/admin/manage-roles",
     icon : faArchive,
