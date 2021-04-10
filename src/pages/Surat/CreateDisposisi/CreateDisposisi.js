@@ -334,7 +334,6 @@ const CreateDisposisi = (props) =>{
         }]}
       >
         <div className={"upload-surat-wrapper"}>
-
           <div className={"upload-surat-header"}>
             <div className="back-button-wrapper" onClick={()=> history.goBack()}>
               <FontAwesomeIcon icon={faArrowLeft} size="md"/>
@@ -393,7 +392,6 @@ const CreateDisposisi = (props) =>{
           </form>
 
         </div>
-
       </Content>
     </div>
   )

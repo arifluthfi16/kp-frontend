@@ -11,7 +11,8 @@ import { useHistory } from "react-router-dom";
 import Select from 'react-select';
 import UploadFileButton from "./UploadFileButton";
 import {LoginContext} from "../../../contexts/LoginContext";
-import Swal from 'sweetalert2'
+import Swal from 'sweetalert2';
+
 
 const UploadFileSuratPage = () =>{
   const history = useHistory();
@@ -63,6 +64,7 @@ const UploadFileSuratPage = () =>{
               name={"email"}
               onChange={(e)=>handleValueChange(e,index, "email")}
               options={parseContactList()}
+
               styles={{
                 control: (base, state) => ({
                   ...base,
@@ -76,6 +78,7 @@ const UploadFileSuratPage = () =>{
                   boxShadow: 'inset 0 -1px #748ba9', // no box-shadow
                 }),
               }}
+
               theme={theme => ({
                 ...theme,
                 borderRadius: 0,
@@ -89,6 +92,7 @@ const UploadFileSuratPage = () =>{
                   controlHeight: 40,
                 }
               })}
+
             />
           </div>
           <div className="form-item-wrapper mr-1">
@@ -97,6 +101,7 @@ const UploadFileSuratPage = () =>{
               name={"email"}
               onChange={(e)=>handleValueChange(e,index, "email")}
               options={parseContactList()}
+
               styles={{
                 control: (base, state) => ({
                   ...base,
@@ -110,6 +115,7 @@ const UploadFileSuratPage = () =>{
                   boxShadow: 'inset 0 -1px #748ba9', // no box-shadow
                 }),
               }}
+
               theme={theme => ({
                 ...theme,
                 borderRadius: 0,
@@ -162,7 +168,7 @@ const UploadFileSuratPage = () =>{
           {formSurat.length > 1 &&
               <Button
                 onClick={()=> handleDelete(index)}
-                style={{  
+                style={{
                   marginLeft: "16px"
                 }}
               >

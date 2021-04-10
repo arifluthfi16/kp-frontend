@@ -16,7 +16,7 @@ const LoginPage = (props) => {
     // Check if user already logged in
     checkLogin();
     if(!user) return
-    console.log(user.roles[0])
+    // console.log(user.roles[0]);
     if(user.roles[0] === "user"){
       window.location.replace("/");
     }else if(user.roles[0] === "admin"){

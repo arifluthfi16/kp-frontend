@@ -22,6 +22,7 @@ import ProcessDocusignCode from "./pages/ProcessDocusignCode/ProcessDocusignCode
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 import AdminRoute from "./components/AdminRoute/AdminRoute";
 import AdminDashboardPage from "./pages/Admin/Dashboard/AdminDashboardPage";
+import EditUserPage from "./pages/Admin/UserManagement/EditUser/EditUserPage";
 import { createBrowserHistory } from "history";
 
 
@@ -70,6 +71,7 @@ const App = () => {
           <AdminRoute exact path={"/admin/manage-contact-book"} component={AdminContactBookManagementPage}/>
           <AdminRoute exact path={"/admin/manage-user"} component={AdminUserManagementPage}/>
           <AdminRoute exact path={"/admin/manage-roles"} component={AdminRoleManagementPage}/>
+          <AdminRoute exact path={"/admin/manage-user/edit"} component={EditUserPage}/>
         </Switch>
       </Router>
     </div>

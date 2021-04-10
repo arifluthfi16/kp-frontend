@@ -9,6 +9,7 @@ import {Link} from "react-router-dom";
 import download from "downloadjs";
 import Swal from 'sweetalert2'
 import {faPlus} from "@fortawesome/free-solid-svg-icons/faPlus";
+import  {useTable} from "react-table"
 
 const RoleTable = (props) =>{
   const conditionallyPrintTable = () =>{
@@ -83,7 +84,7 @@ const RoleTable = (props) =>{
   return  (
     <table className={"table-content"} width={"100%"}>
       <tr>
-        <th width="25%">Nama Group</th>
+        <th width="25%">Nama Role</th>
         <th width="25%">Jumlah User Terdaftar</th>
         <th width="20%">Aksi</th>
       </tr>

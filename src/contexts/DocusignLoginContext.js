@@ -1,9 +1,12 @@
 import React, {createContext, useState, useContext, useEffect} from 'react';
 import axios from 'axios';
 import {LoginContext} from "./LoginContext";
+import Swal from "sweetalert2";
+import {useHistory} from "react-router-dom";
 export const DocusignLoginContext = createContext();
 
 const DocusignLoginContextProvider = (props) => {
+  const history = useHistory();
 
   const [docuContext, setDocuContext] = useState({
     login: false,
@@ -121,6 +124,7 @@ const DocusignLoginContextProvider = (props) => {
   }
 
   const fetchDSProfile = () =>{
+
     let url ="http://localhost:3001/api/get-profile";
     let data = {
       access_token : docuContext.auth.access_token
@@ -176,7 +180,19 @@ const DocusignLoginContextProvider = (props) => {
         if(response.data.error){
           // Try to renew token
           console.log("Should renew token")
-          alert("Renew Token")
+          Swal.fire({
+            title: 'Login kembali',
+            text: "Masa login anda sudah habis mohon lakukan login kembali!",
+            icon: 'danger',
+            showCancelButton: false,
+            confirmButtonColor: '#3085d6',
+            confirmButtonText: 'Login'
+          }).then(async (result) => {
+            if (result.isConfirmed) {
+              await docusignLogout();
+              window.location.replace("/login")
+            }
+          })
         }else{
           setDocuContext((prevState)=> ({
             ...prevState,
@@ -188,7 +204,7 @@ const DocusignLoginContextProvider = (props) => {
         setDSLoad(false);
 
       }catch(error){
-        console.log("LOCAL SERVER ERROR")
+        console.error(error);
         resetStateDefault();
         setDSLoad(false)
       }
@@ -225,7 +241,7 @@ const DocusignLoginContextProvider = (props) => {
   }
 
   return (
-      <DocusignLoginContext.Provider value={{docuContext,DSLoad, checkDocuLogin, getAccessCode, docusignLogout, fetchDSProfile, setDSLoad}}>
+    <DocusignLoginContext.Provider value={{docuContext,DSLoad, checkDocuLogin, getAccessCode, docusignLogout, fetchDSProfile, setDSLoad}}>
       {props.children}
     </DocusignLoginContext.Provider>
   );
