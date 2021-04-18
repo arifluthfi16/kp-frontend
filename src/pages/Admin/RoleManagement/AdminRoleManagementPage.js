@@ -70,12 +70,30 @@ const AdminRoleManagementPage = () =>{
     setRoleData(result.data.data)
   }
 
+  const removeGroupData = async (group_id) => {
+    setActiveRoleGroupRow(null)
+    setRoleGroupData((prevState => (
+      prevState.filter((element,index)=>{
+        if(element.id !== group_id) return element
+      })
+    )))
+  }
+
+  const removeRoleData = async (role_id) => {
+    setRoleData((prevState => (
+      prevState.filter((element,index)=>{
+        if(element.id !== role_id) return element
+      })
+    )))
+  }
+
   const conditionallyPrintRoleGroupTable = () =>{
     return (
       <RoleGroupTable
         data={roleGroupData}
         activeRow = {activeRoleGroupRow}
         setActiveRow = {setActiveRow}
+        removeItem = {removeGroupData}
       />
     )
   }
@@ -87,7 +105,9 @@ const AdminRoleManagementPage = () =>{
   const conditionallyPrintRoleTable = () =>{
     return (
       <RoleTable
+        activeRow = {activeRoleGroupRow}
         data={roleData}
+        removeItem = {removeRoleData}
       />
     )
   }

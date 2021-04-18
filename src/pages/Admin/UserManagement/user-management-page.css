@@ -1,15 +1,16 @@
-.dashboard-container{
+.role-management-container{
     display: flex;
     flex-direction: row;
     width: 100%;
     margin : 0px;
-    background-color: #F8F8F8;
+    background-color: black;
+    height: 1200px;
 }
 
 .table-container {
     display: flex;
     margin : 0px;
-
+    min-height: 600px;
 }
 
 .column {
